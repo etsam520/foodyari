@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 Enhanced QR Template Creator Demo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .demo-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .demo-header h1 {
+            font-size: 2.5em;
+            margin: 0 0 10px 0;
+            font-weight: 700;
+        }
+        
+        .demo-header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin: 0;
+        }
+        
+        .demo-content {
+            padding: 40px;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .feature-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 5px solid #667eea;
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-card h3 {
+            color: #333;
+            margin: 0 0 15px 0;
+            font-size: 1.3em;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            padding-left: 25px;
+        }
+        
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .action-buttons {
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1em;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .demo-preview {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .preview-canvas {
+            width: 300px;
+            height: 300px;
+            background: white;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #666;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .qr-demo {
+            width: 100px;
+            height: 100px;
+            background: #333;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .text-demo {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .icon-demo {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 24px;
+            color: #667eea;
+        }
+        
+        .tech-specs {
+            background: #2d3748;
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin: 30px 0;
+        }
+        
+        .tech-specs h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .spec-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .spec-item {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .spec-item strong {
+            color: #667eea;
+        }
+        
+        @media (max-width: 768px) {
+            .demo-header {
+                padding: 20px;
+            }
+            
+            .demo-header h1 {
+                font-size: 1.8em;
+            }
+            
+            .demo-content {
+                padding: 20px;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .btn {
+                display: block;
+                margin: 10px auto;
+                width: 250px;
+            }
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #28a745;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>🎨 Enhanced QR Template Creator</h1>
+            <p><span class="status-indicator"></span>Zone-wise Template Designer with Advanced Features</p>
+        </div>
+        
+        <div class="demo-content">
+            <div class="demo-preview">
+                <h3>Live Template Preview</h3>
+                <div class="preview-canvas">
+                    <div class="text-demo">Welcome!</div>
+                    <div class="qr-demo">QR CODE</div>
+                    <div class="icon-demo">🍕</div>
+                </div>
+                <p><em>Interactive canvas with drag-and-drop positioning</em></p>
+            </div>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🖼️ Enhanced Background System</h3>
+                    <ul class="feature-list">
+                        <li>Drag & Drop Image Upload (up to 5MB)</li>
+                        <li>Real-time Background Preview</li>
+                        <li>Color Picker with Live Updates</li>
+                        <li>Image Management (Remove/Replace)</li>
+                        <li>Support for JPG, PNG, GIF formats</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>🎯 Multiple Image Icons System</h3>
+                    <ul class="feature-list">
+                        <li>Upload Multiple Images as Icons (3MB each)</li>
+                        <li>Support for PNG, JPG, GIF formats</li>
+                        <li>Drag & Drop Multiple Images</li>
+                        <li>Individual Icon Positioning & Sizing</li>
+                        <li>Opacity & Rotation Controls</li>
+                        <li>Real-time Canvas Preview</li>
+                        <li>12 Preset FontAwesome Icons</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>📝 Smart Text System</h3>
+                    <ul class="feature-list">
+                        <li>6 Quick Text Presets</li>
+                        <li>Advanced Font Styling Options</li>
+                        <li>Real-time Text Positioning</li>
+                        <li>Multiple Text Elements Support</li>
+                        <li>Font Family & Weight Selection</li>
+                        <li>Text Alignment Controls</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h3>⚡ Interactive Features</h3>
+                    <ul class="feature-list">
+                        <li>Live Canvas Preview Updates</li>
+                        <li>Drag-and-Drop Positioning</li>
+                        <li>Visual Selection Feedback</li>
+                        <li>Form Validation & Error Handling</li>
+                        <li>Responsive Design Interface</li>
+                        <li>Mobile-Friendly Controls</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="tech-specs">
+                <h3>🔧 Technical Specifications</h3>
+                <div class="spec-grid">
+                    <div class="spec-item">
+                        <strong>Canvas Size:</strong><br>
+                        200px - 2000px (Width/Height)
+                    </div>
+                    <div class="spec-item">
+                        <strong>QR Code Size:</strong><br>
+                        50px - 500px with positioning
+                    </div>
+                    <div class="spec-item">
+                        <strong>Background Images:</strong><br>
+                        JPG, PNG, GIF up to 5MB
+                    </div>
+                    <div class="spec-item">
+                        <strong>Custom Icons:</strong><br>
+                        PNG files up to 2MB each
+                    </div>
+                    <div class="spec-item">
+                        <strong>Text Elements:</strong><br>
+                        Unlimited with full styling
+                    </div>
+                    <div class="spec-item">
+                        <strong>Error Correction:</strong><br>
+                        L (7%), M (15%), Q (25%), H (30%)
+                    </div>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <a href="/admin/qr-template/create" class="btn">
+                    🎨 Open Template Creator
+                </a>
+                <a href="/admin/qr-template" class="btn btn-secondary">
+                    📋 View All Templates
+                </a>
+                <a href="/test-qr-templates.html" class="btn">
+                    📊 System Status
+                </a>
+            </div>
+            
+            <div style="text-align: center; padding: 30px; color: #666;">
+                <h3>🚀 Ready for Production</h3>
+                <p>Your enhanced QR template creator is now ready with all advanced features!</p>
+                <p><strong>Next Step:</strong> Integrate with FFmpeg for actual QR code generation</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Add some interactive demo effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate the preview canvas
+            const canvas = document.querySelector('.preview-canvas');
+            const qrDemo = document.querySelector('.qr-demo');
+            const textDemo = document.querySelector('.text-demo');
+            const iconDemo = document.querySelector('.icon-demo');
+            
+            // Simulate drag and drop movement
+            setInterval(() => {
+                const randomX = Math.random() * 50 + 10;
+                const randomY = Math.random() * 50 + 10;
+                
+                textDemo.style.transform = `translate(${randomX}px, ${randomY}px)`;
+            }, 3000);
+            
+            // Add click effects to feature cards
+            document.querySelectorAll('.feature-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    this.style.transform = 'translateY(-10px)';
+                    setTimeout(() => {
+                        this.style.transform = 'translateY(-5px)';
+                    }, 200);
+                });
+            });
+            
+            console.log('🎨 Enhanced QR Template Creator Demo Loaded!');
+            console.log('✅ Background Image Picker: Ready');
+            console.log('✅ Custom PNG Icon Selector: Ready');
+            console.log('✅ Smart Text System: Ready');
+            console.log('✅ Interactive Features: Ready');
+        });
+    </script>
+</body>
+</html>

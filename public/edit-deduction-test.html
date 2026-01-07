@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Deduction Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="mb-4">Edit Deduction Functionality Test</h2>
+            
+            <!-- Test Results Display -->
+            <div id="testResults" class="mb-4"></div>
+            
+            <!-- Feature Overview -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">✨ New Feature: Edit Restaurant Deduction</h5>
+                </div>
+                <div class="card-body">
+                    <h6>What's New:</h6>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">✅ <strong>Edit Deduction Button</strong> - Added to pending refund details page</li>
+                        <li class="list-group-item">✅ <strong>Interactive Modal</strong> - Edit deduction amount and reason in real-time</li>
+                        <li class="list-group-item">✅ <strong>Live Validation</strong> - Prevents invalid amounts (negative or exceeding refund)</li>
+                        <li class="list-group-item">✅ <strong>Real-time Calculation</strong> - Shows final refund amount as you type</li>
+                        <li class="list-group-item">✅ <strong>AJAX Updates</strong> - Updates without page refresh</li>
+                        <li class="list-group-item">✅ <strong>Audit Trail</strong> - Tracks all deduction changes</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Usage Instructions -->
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">📋 How to Use</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>For Admins:</h6>
+                            <ol>
+                                <li>Go to <code>/admin/refund/show/{id}</code> for any pending refund</li>
+                                <li>Click the <span class="badge bg-warning">Edit Deduction</span> button</li>
+                                <li>Modify the restaurant deduction amount</li>
+                                <li>Add/update the deduction reason</li>
+                                <li>Click "Update Deduction" to save changes</li>
+                            </ol>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Validation Rules:</h6>
+                            <ul>
+                                <li>✅ Deduction cannot exceed refund amount</li>
+                                <li>✅ Deduction cannot be negative</li>
+                                <li>✅ Only pending refunds can be modified</li>
+                                <li>✅ Real-time feedback on input</li>
+                                <li>✅ Final amount calculation displayed</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technical Implementation -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">⚙️ Technical Implementation</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Backend Changes:</h6>
+                            <ul class="list-unstyled">
+                                <li>📁 <strong>Route:</strong> <code>PUT /admin/refund/update-deduction/{id}</code></li>
+                                <li>🎯 <strong>Controller:</strong> <code>RefundController@updateDeduction</code></li>
+                                <li>✅ <strong>Validation:</strong> Amount/reason validation with custom rules</li>
+                                <li>🔒 <strong>Security:</strong> CSRF protection & status checks</li>
+                                <li>📊 <strong>Response:</strong> JSON API with success/error handling</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Frontend Features:</h6>
+                            <ul class="list-unstyled">
+                                <li>🎨 <strong>Modal:</strong> Bootstrap modal with form validation</li>
+                                <li>⚡ <strong>Real-time:</strong> Live calculation and validation</li>
+                                <li>🔄 <strong>AJAX:</strong> Seamless updates without page reload</li>
+                                <li>💡 <strong>UX:</strong> Loading states and error feedback</li>
+                                <li>📱 <strong>Responsive:</strong> Works on all device sizes</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sample Scenarios -->
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">🎯 Test Scenarios</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card border-success">
+                                <div class="card-body">
+                                    <h6 class="text-success">✅ Valid Scenario</h6>
+                                    <p><strong>Refund:</strong> $50.00</p>
+                                    <p><strong>Deduction:</strong> $10.00</p>
+                                    <p><strong>Reason:</strong> "Late delivery penalty"</p>
+                                    <p><strong>Final Amount:</strong> $40.00</p>
+                                    <small class="text-muted">Should update successfully</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-danger">
+                                <div class="card-body">
+                                    <h6 class="text-danger">❌ Invalid Scenario</h6>
+                                    <p><strong>Refund:</strong> $30.00</p>
+                                    <p><strong>Deduction:</strong> $35.00</p>
+                                    <p><strong>Reason:</strong> "Excessive penalty"</p>
+                                    <p><strong>Result:</strong> Validation Error</p>
+                                    <small class="text-muted">Should be rejected</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-info">
+                                <div class="card-body">
+                                    <h6 class="text-info">ℹ️ Edge Case</h6>
+                                    <p><strong>Refund:</strong> $25.99</p>
+                                    <p><strong>Deduction:</strong> $0.00</p>
+                                    <p><strong>Reason:</strong> ""</p>
+                                    <p><strong>Final Amount:</strong> $25.99</p>
+                                    <small class="text-muted">Remove all deductions</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Testing -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">🔧 API Testing</h5>
+                </div>
+                <div class="card-body">
+                    <h6>Test the API Endpoint:</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Sample Request:</h6>
+                            <pre class="bg-light p-3"><code>PUT /admin/refund/update-deduction/1
+Content-Type: application/json
+X-CSRF-TOKEN: {token}
+
+{
+    "restaurant_deduction_amount": 15.50,
+    "restaurant_deduction_reason": "Quality issue penalty"
+}</code></pre>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Expected Response:</h6>
+                            <pre class="bg-light p-3"><code>{
+    "success": true,
+    "message": "Restaurant deduction updated successfully",
+    "data": {
+        "deduction_amount": 15.50,
+        "deduction_reason": "Quality issue penalty",
+        "final_refund_amount": 34.50
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Test Interface -->
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">🚀 Live Test Interface</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fa fa-info-circle"></i>
+                        <strong>Note:</strong> This is a demonstration interface. In production, you would access this through the actual refund details page.
+                    </div>
+                    
+                    <form id="testDeductionForm">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Refund ID</label>
+                                    <input type="number" class="form-control" name="refund_id" value="1" min="1">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Original Refund Amount</label>
+                                    <input type="number" class="form-control" id="originalAmount" value="50.00" step="0.01" readonly>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">New Deduction Amount</label>
+                                    <input type="number" class="form-control" name="restaurant_deduction_amount" value="10.00" step="0.01" min="0">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Deduction Reason</label>
+                            <textarea class="form-control" name="restaurant_deduction_reason" rows="2" placeholder="Enter reason for deduction...">Late delivery penalty - order arrived 45 minutes late</textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-save"></i> Test Update Deduction
+                                </button>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <h6>Final Refund Amount: <span id="finalAmount" class="text-success">$40.00</span></h6>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Test form calculation
+document.querySelector('[name="restaurant_deduction_amount"]').addEventListener('input', function() {
+    const original = parseFloat(document.getElementById('originalAmount').value) || 0;
+    const deduction = parseFloat(this.value) || 0;
+    const final = original - deduction;
+    document.getElementById('finalAmount').textContent = '$' + final.toFixed(2);
+});
+
+// Test form submission
+document.getElementById('testDeductionForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
+    
+    // Simulate API call
+    const resultDiv = document.getElementById('testResults');
+    resultDiv.innerHTML = `
+        <div class="alert alert-info">
+            <h6>🧪 Test API Call Simulation</h6>
+            <p><strong>Endpoint:</strong> PUT /admin/refund/update-deduction/${data.refund_id}</p>
+            <p><strong>Payload:</strong></p>
+            <pre>${JSON.stringify({
+                restaurant_deduction_amount: parseFloat(data.restaurant_deduction_amount),
+                restaurant_deduction_reason: data.restaurant_deduction_reason
+            }, null, 2)}</pre>
+            <hr>
+            <p><strong>✅ Expected Result:</strong> Deduction updated successfully with real-time validation and AJAX response.</p>
+        </div>
+    `;
+});
+
+// Initialize
+document.dispatchEvent(new Event('DOMContentLoaded'));
+</script>
+</body>
+</html>

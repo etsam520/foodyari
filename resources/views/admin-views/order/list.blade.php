@@ -1,0 +1,271 @@
+@extends('layouts.dashboard-main')
+
+@push('css')
+<link rel="stylesheet" href="{{asset('assets/vendor/flatpickr/dist/flatpickr.min.css')}}">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
+@endpush
+
+@section('content')
+
+<div class="conatiner-fluid content-inner mt-5 py-0">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap">
+                        <p class="mb-md-0 mb-2 d-flex align-items-center">
+                            <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-2 icon-20">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M4.56517 3C3.70108 3 3 3.71286 3 4.5904V5.52644C3 6.17647 3.24719 6.80158 3.68936 7.27177L8.5351 12.4243L8.53723 12.4211C9.47271 13.3788 9.99905 14.6734 9.99905 16.0233V20.5952C9.99905 20.9007 10.3187 21.0957 10.584 20.9516L13.3436 19.4479C13.7602 19.2204 14.0201 18.7784 14.0201 18.2984V16.0114C14.0201 14.6691 14.539 13.3799 15.466 12.4243L20.3117 7.27177C20.7528 6.80158 21 6.17647 21 5.52644V4.5904C21 3.71286 20.3 3 19.4359 3H4.56517Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                            Filter  ::  {{Str::ucfirst($filter)}}
+                        </p>
+                        <div class="d-flex align-items-center flex-wrap">
+
+                            <div class="dropdown me-3">
+                                <span class="dropdown-toggle align-items-center d-flex" id="dropdownMenuButton04" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-2 icon-20">
+                                        <path d="M3.09277 9.40421H20.9167" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                        <path d="M16.442 13.3097H16.4512" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                        <path d="M12.0045 13.3097H12.0137" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                        <path d="M7.55818 13.3097H7.56744" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                        <path d="M16.442 17.1962H16.4512" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                        <path d="M12.0045 17.1962H12.0137" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                        <path d="M7.55818 17.1962H7.56744" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                        <path d="M16.0433 2V5.29078" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                        <path d="M7.96515 2V5.29078" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M16.2383 3.5791H7.77096C4.83427 3.5791 3 5.21504 3 8.22213V17.2718C3 20.3261 4.83427 21.9999 7.77096 21.9999H16.229C19.175 21.9999 21 20.3545 21 17.3474V8.22213C21.0092 5.21504 19.1842 3.5791 16.2383 3.5791Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    </svg>
+
+                                       @if($filter == 'today')
+                                       Today :
+                                       @elseif ($filter == 'this_week')
+                                       Week:
+                                       @elseif ($filter == 'this_month')
+                                       Month :
+                                       @elseif ($filter == 'this_year')
+                                       Year
+                                       @elseif ($filter == 'previous_year')
+                                        Previous Year
+                                        @else
+                                        Select
+                                       @endif
+                                </span>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton22" style="">
+                                   <li><a class="dropdown-item" href="{!! route('admin.order.list', $statusKey).'?filter=this_week' !!}">This Week</a></li>
+                                   <li><a class="dropdown-item" href="{!! route('admin.order.list', $statusKey).'?filter=this_month' !!}">This Month</a></li>
+                                   <li><a class="dropdown-item" href="{!! route('admin.order.list', $statusKey).'?filter=this_year' !!}">This Year</a></li>
+                                   <li><a class="dropdown-item" href="{!! route('admin.order.list', $statusKey).'?filter=previous_year' !!}">Previous Year</a></li>
+                                   <li><a class="dropdown-item" href="{!! route('admin.order.list', $statusKey).'?filter=today' !!}">Today</a></li>
+                                </ul>
+                            </div>
+                            <form action="{{route('admin.order.list', $statusKey)}}">
+                            <div class="me-3 d-flex align-items-center justify-content-center">
+
+                                    <input type="text" name="date_range" class="form-control range_flatpicker d-flex flatpickr-input active" placeholder="Date Range" readonly="readonly" required>
+                                    <input type="hidden" name="filter" value="custom">
+                                    <button class="badge rounded-pill bg-success ms-1 mb-1 px-3 py-2" type="submit">Go</button>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-12 col-lg-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
+                    <div class="header-title">
+                        <h4 class="card-title"> {{str_replace('_',' ',$status)}} {{__('messages.orders')}} <span class="badge badge-soft-dark ml-2">{{$orders->count()}}</span></h4>
+                    </div>
+                </div>
+                <div class="card-body">
+
+                    <!-- Table -->
+                    <div class="table-responsive ">
+                        <table  class="table table-hover table-borderless table-thead-bordered table-nowrap table-align-middle card-table"
+                        id="datatable-export" data-toggle="data-table-export">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th class="w-60px">
+                                        {{ __('messages.sl') }}
+                                    </th>
+                                    <th class="w-90px table-column-pl-0">{{__('messages.Order ID')}}</th>
+                                    <th class="w-140px">{{__('messages.order')}} {{__('messages.date')}}</th>
+                                    <th class="w-140px">{{__('messages.customer_information')}}</th>
+                                    <th class="w-140px">{{__('messages.Restaurant')}}</th>
+                                    <th class="w-100px">{{__('messages.total')}} {{__('messages.amount')}}</th>
+                                    <th class="w-100px text-center">{{__('messages.order')}} {{__('messages.status')}}</th>
+                                    <th class="w-100px text-center">{{__('messages.actions')}}</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="set-rows">
+                                @foreach($orders as $key=>$order)
+                                <tr class="status-{{$order['order_status']}} class-all">
+                                    <td class="">
+                                        {{$key+1}}
+                                    </td>
+                                    <td class="table-column-pl-0">
+                                        <a href="{{route('admin.order.details',['id'=>$order['id']])}}" class="text-hover">{{$order['id']}}</a>
+                                    </td>
+                                    <td>
+                                        <span class="d-block">
+                                            {{date('d M Y',strtotime($order['created_at']))}}
+                                        </span>
+                                        <span class="d-block text-uppercase">
+                                            {{ \Carbon\Carbon::parse($order->created_at)->format('h:i A') }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if($order->customer)
+                                        <a class="text-body text-capitalize" href="{{route('admin.order.details',['id'=>$order['id']])}}">
+                                            <span class="d-block font-semibold">
+                                                @if($order->lovedOne)
+                                                    {{$order->lovedOne->name}}
+                                                    <small class="badge bg-warning text-dark ms-1">❤️ Loved One</small>
+                                                @else
+                                                    {{$order->customer['f_name'].' '.$order->customer['l_name']}}
+                                                @endif
+                                            </span>
+                                            <span class="d-block">
+                                                @if($order->lovedOne)
+                                                    {{$order->lovedOne->phone}}
+                                                @else
+                                                    {{$order->customer['phone']}}
+                                                @endif
+                                            </span>
+                                        </a>
+                                        @else
+                                        <label class="badge rounded-pill bg-danger">{{__('messages.invalid')}} {{__('messages.customer')}} {{__('messages.data')}}</label>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <span>
+                                            {{Str::ucfirst($order->restaurant->name)}}
+                                        </span>
+                                    </td>
+                                    <td>
+
+
+                                        <div class="text-right mw-85px">
+                                            <div>
+                                                {{\App\CentralLogics\Helpers::format_currency($order['order_amount'])}}
+                                            </div>
+                                            @if($order->payment_status=='paid')
+                                            <strong class="text-success">
+                                                {{__('messages.paid')}}
+                                            </strong>
+                                            @else
+                                            <strong class="text-danger">
+                                                {{__('messages.unpaid')}}
+                                            </strong>
+                                            @endif
+                                        </div>
+
+                                    </td>
+                                    <td class="text-capitalize text-center">
+                                        @if (isset($order->subscription) && $order->subscription->status != 'canceled' )
+                                        @php
+                                        $order->order_status = $order->subscription_log ? $order->subscription_log->order_status : $order->order_status;
+                                        @endphp
+                                        @endif
+                                        @if($order['order_status']=='pending')
+                                        <span class="badge rounded-pill bg-info mb-1">
+                                            {{__('messages.pending')}}
+                                        </span>
+                                        @elseif($order['order_status']=='confirmed')
+                                        <span class="badge rounded-pill bg-info mb-1">
+                                            {{__('messages.confirmed')}}
+                                        </span>
+                                        @elseif($order['order_status']=='processing')
+                                        <span class="badge rounded-pill bg-warning mb-1">
+                                            {{__('messages.processing')}}
+                                        </span>
+                                        @elseif($order['order_status']=='picked_up')
+                                        <span class="badge rounded-pill bg-warning mb-1">
+                                            {{__('messages.out_for_delivery')}}
+                                        </span>
+                                        @elseif($order['order_status']=='delivered')
+                                        <span class="badge rounded-pill bg-success mb-1">
+                                            {{__('messages.delivered')}}
+                                        </span>
+                                        @elseif($order['order_status']=='scheduled')
+                                        <span class="badge rounded-pill bg-warning mb-1">
+                                            <i class="fas fa-clock me-1"></i>{{__('messages.scheduled')}}
+                                        </span>
+                                        @else
+                                        <span class="badge rounded-pill bg-danger mb-1">
+                                            {{__(str_replace('_',' ',$order['order_status']))}}
+                                        </span>
+                                        @endif
+
+
+                                        <div class="text-capitalze opacity-7">
+                                            @if($order['order_type']=='take_away')
+                                            <span>
+                                                {{__('messages.take_away')}}
+                                            </span>
+                                            @else
+                                            <span>
+                                                {{__('messages.delivery')}}
+                                            </span>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="btn--container justify-content-center">
+                                            <a class="text-warning mx-2" href="{{route('admin.order.details',['id'=>$order['id']])}}"><i class="fa fa-eye"></i></a>
+                                            <a class="text-primary" target="_blank" href="{{route('admin.order.generate-invoice',[$order['id']])}}"><i class="fa fa-print"></i></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    @if(count($orders) === 0)
+                    <div class="text-center">
+                        <img src="{{asset('assets/images/icons/nodata.png')}}" alt="public">
+                    </div>
+                    @endif
+                    <!-- End Table -->
+                </div>
+                <!-- End Card -->
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+@push('javascript')
+    <script src="{{asset('assets/vendor/flatpickr/dist/flatpickr.min.js')}}"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+    <!-- Buttons Extension -->
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+
+    <!-- HTML5 Export Buttons -->
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.print.min.js"></script>
+
+    <!-- Dependencies for Excel and PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#datatable-export').DataTable({
+                dom: 'Bfrtip', // Define placement for Buttons
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print' // List of export buttons
+                ],
+                responsive: true, // Makes the table responsive
+                paging: true, // Enables pagination
+                searching: true, // Enables the search box
+                ordering: true // Enables column sorting
+            });
+        });
+    </script>
+@endpush

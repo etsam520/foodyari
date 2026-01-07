@@ -1,0 +1,32 @@
+.member-plan{
+    font-size: 12px;
+}
+.list-card.d-flex .list-card-image .item-img {
+    width: 100%;
+    /* height: 100%;
+    object-fit: cover;
+    aspect-ratio: 1 / 1; */
+}
+.list-card a, .list-card h6 {
+    color: inherit;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 16px;
+    font-weight: 800;
+    text-overflow: ellipsis;
+}
+.pac-container{
+    z-index: 99999;
+}
+.bg-brown {
+    background-color: brown !important;
+}
+.cart-section{
+    position: sticky !important;
+}
+@media (max-width: 576px) {
+    .cart-section{
+        position: absolute;
+        margin-bottom: 70px;
+    }
+}

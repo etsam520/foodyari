@@ -1,0 +1,807 @@
+@extends('layouts.dashboard-main')
+
+@section('content')
+<div class="conatiner-fluid content-inner mt-n5 py-0">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
+                    <div class="header-title">
+                        <h4 class="card-title">
+                            {{-- <svg width="30px" viewBox="-2.1 -2.1 25.20 25.20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>plus_circle [#1441]</title> <desc>Created with Sketch.</desc> <defs> </defs> <g id="Page-1" stroke-width="0.315" fill="none" fill-rule="evenodd"> <g id="Dribbble-Light-Preview" transform="__(-419.000000, -520.000000)" fill="currentColor"> <g id="icons" transform="__(56.000000, 160.000000)"> <path d="M374.55,369 L377.7,369 L377.7,371 L374.55,371 L374.55,374 L372.45,374 L372.45,371 L369.3,371 L369.3,369 L372.45,369 L372.45,366 L374.55,366 L374.55,369 Z M373.5,378 C368.86845,378 365.1,374.411 365.1,370 C365.1,365.589 368.86845,362 373.5,362 C378.13155,362 381.9,365.589 381.9,370 C381.9,374.411 378.13155,378 373.5,378 L373.5,378 Z M373.5,360 C367.70085,360 363,364.477 363,370 C363,375.523 367.70085,380 373.5,380 C379.29915,380 384,375.523 384,370 C384,364.477 379.29915,360 373.5,360 L373.5,360 Z" id="plus_circle-[#1441]"> </path> </g> </g> </g> </g></svg> --}}
+                          {{_('Bussiness Setting')}}
+                        </h4>
+                    </div>
+                </div>
+                <div class="card-body">
+
+                                                                                                                                                                                                                                                                                           <div class="row gx-2 ">
+
+                        <div class="col-sm-12 col-lg-12 mb-3 mb-lg-2">
+                            <form action="{{ route('admin.business-settings.update-setup') }}" method="post" enctype="multipart/form-data">
+                                @csrf
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        <h4 class="card-title m-0 d-flex align-items-center"> <span class="card-header-icon mr-2"><i class="tio-user"></i></span> <span>{{__('messages.general_info')}}</span></h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <!-- Name Email and Phone -->
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                @php($name = \App\Models\BusinessSetting::where('key', 'business_name')->first())
+                                                <div class="form-group">
+                                                    <label class="input-label" for="exampleFormControlInput1">{{ __('messages.business') }}
+                                                        {{ __('messages.name') }}</label>
+                                                    <input type="text" name="restaurant_name" value="{{ $name->value ?? '' }}" class="form-control" placeholder="{{ __('messages.Enter Business Name') }}" required>
+                                                </div>
+                                            </div>
+                                            @php($phone = \App\Models\BusinessSetting::where('key', 'phone')->first())
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label class="input-label" for="exampleFormControlInput1">{{ __('messages.phone') }}</label>
+                                                    <input type="text" value="{{ $phone->value ?? '' }}" name="phone" class="form-control" placeholder="{{ __('messages.Enter Contact Number') }}" required>
+                                                </div>
+                                            </div>
+                                            @php($email = \App\Models\BusinessSetting::where('key', 'email_address')->first())
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label class="input-label" for="exampleFormControlInput1">{{ __('messages.email') }}</label>
+                                                    <input type="email" value="{{ $email->value ?? '' }}" name="email" class="form-control" placeholder="{{ __('messages.Enter Email ID') }}" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Map and Address -->
+                                        <div class="row gy-3">
+                                            <div class="col-lg-6">
+                                                @php($address = \App\Models\BusinessSetting::where('key', 'address')->first())
+                                                <div class="form-group">
+                                                    <label class="input-label" for="exampleFormControlInput1">{{ __('messages.address') }}</label>
+                                                    <input type="text" id="address" name="address" class="form-control" placeholder="{{ __('messages.Enter Address') }}" value=" {{$address->value ?? '' }}" />
+                                                </div>
+                                                @php($footer_text = \App\Models\BusinessSetting::where('key', 'footer_text')->first())
+                                                <div class="form-group">
+                                                    <label class="input-label" for="exampleFormControlInput1">{{ __('messages.footer') }}
+                                                        {{ __('messages.text') }}</label>
+                                                    <textarea type="text" value="" name="footer_text" class="form-control" placeholder="{{ __('messages.Enter Footer Text') }}" rows="1" required>{{ $footer_text->value ?? '' }}</textarea>
+                                                </div>
+                                                @php($default_location = \App\Models\BusinessSetting::where('key', 'default_location')->first())
+                                                @php($default_location = isset($default_location) ? json_decode($default_location->value, true) :0)
+                                                <div class="form-group">
+                                                    <label class="input-label text-capitalize d-flex alig-items-center" for="latitude">{{ __('messages.latitude') }}<span class="input-label-secondary" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="{{ __('messages.click_on_the_map_select_your_defaul_location') }}">
+                                                            &nbsp;<i style="font-size:18px;text-transform:lowercase;">&#9432;</i>
+                                                            <input type="text" id="latitude" name="latitude" class="form-control d-inline" placeholder="{{ __('messages.Ex :') }} -94.22213" value="{{ $default_location ? $default_location['lat'] : 0 }}" required readonly>
+                                                </div>
+                                                <div class="form-group mb-0">
+                                                    <label class="input-label text-capitalize d-flex alig-items-center" for="longitude">{{ __('messages.longitude') }}<span class="input-label-secondary" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="{{ __('messages.click_on_the_map_select_your_defaul_location') }}">
+                                                            &nbsp;<i style="font-size:18px;text-transform:lowercase;">&#9432;</i>
+                                                            <input type="text" name="longitude" class="form-control" placeholder="{{ __('messages.Ex :') }} 103.344322" id="longitude" value="{{ $default_location ? $default_location['lng'] : 0 }}" required readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <div class="row">
+                                                    <div class="col-md-6 mt-3 mx-auto">
+                                                        <div class="form-group d-flex">
+                                                            <input type="text" id="search-address-input"
+                                                                class="form-control rounded-0"
+                                                                placeholder="Enter Address or Place">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="map-canvas" style=" width:100%;height: 50vh"></div>
+                                            </div>
+
+                                            {{-- <div class="col-lg-6">
+                                                <div class="mb-3">
+                                                    <input type="text" class="form-control form-control-sm"  id="search-address-input" aria-describedby="helpId" placeholder="Enter Map Location Address" />
+                                                    <div id="location_map_canvas" style="height: 25rem;"></div>
+                                                </div>
+                                            </div> --}}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        <h4 class="card-title m-0 d-flex align-items-center"> <span class="card-header-icon mr-2"><i class="tio-neighborhood"></i></span> <span>{{__('messages.business')}} {{__('messages.info')}}</span></h4>
+                                    </div>
+                                    <div class="card-body pb-0">
+                                        <div class="row">
+                                            <div class="col-sm-6 col-md-4 mb-3 mx-auto ">
+                                                @php($logo = \App\Models\BusinessSetting::where('key', 'logo')->first())
+                                                @php($logo = $logo->value ?? '')
+                                                <div class="form-group mb-0 d-flex">
+                                                    <center class="h-100px">
+                                                        <img class="initial-10" id="logo-viewer" src="{{!empty($logo) ? asset('business/' . $logo) : asset('assets/images/icons/300x100/restaurant-default-image.png') }}" alt="logo image" />
+                                                    </center>
+                                                    <div class="custom-file d-flex flex-column ms-2 mb-3">
+                                                        <label class="input-label mt-2"> {{ __('messages.logo') }} <small class="text-danger">* ( {{ __('messages.ratio') }} 300x100 )</small></label>
+                                                        <input type="file" name="logo" id="customFileEg1" class="custom-file-input " accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*" hidden onchange="readImage(this,'#logo-viewer')">
+                                                        <label class="custom-file-label btn btn-soft-warning" for="customFileEg1">{{ __('messages.choose') }}
+                                                            {{ __('messages.file') }}</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6 col-md-6 mb-3">
+                                                @php($icon = \App\Models\BusinessSetting::where('key', 'icon')->first())
+                                                @php($icon = $icon->value ?? '')
+                                                {{-- @dd($icon) --}}
+                                                <div class="form-group mb-0 d-flex">
+                                                    <center class="h-100px">
+                                                        <img class="initial-10" id="iconViewer" src="{{!empty($icon) ? asset('business/'.$icon) : asset('assets/images/icons/restaurant-default-image.png') }}" alt="Fav icon" />
+                                                    </center>
+                                                    <div class="custom-file d-flex flex-column ms-2 mb-3">
+                                                        <label class="input-label mt-2"> {{ __('messages.Fav Icon') }}<small class="text-danger">* ( {{ __('messages.ratio') }} 150x150 )</small></label>
+                                                        <input type="file" name="icon" id="favIconUpload" class="custom-file-input" accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*" hidden  onchange="readImage(this,'#iconViewer')">
+                                                        <label class="custom-file-label btn btn-soft-warning" for="favIconUpload">{{ __('messages.choose') }}
+                                                            {{ __('messages.file') }}</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Zone-Specific Settings Notice -->
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        <h4 class="card-title m-0 d-flex align-items-center">
+                                            <span class="card-header-icon mr-2"><i class="tio-info"></i></span>
+                                            <span>{{ __('Zone-Specific Settings Available') }}</span>
+                                        </h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="alert alert-info mb-0">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <h5 class="alert-heading">{{ __('Enhanced Zone Management') }}</h5>
+                                                    <p class="mb-0">{{ __('Business settings including notification messages, operational settings, commissions, and more can now be configured separately for each zone. This allows for more flexible management across different service areas.') }}</p>
+                                                </div>
+                                                <div class="ml-3">
+                                                    <a href="{{ route('admin.zone.business-settings.index') }}" class="btn btn-primary">
+                                                        <i class="tio-settings-outlined"></i>
+                                                        {{ __('Manage Zone Settings') }}
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        <h4 class="card-title m-0 d-flex align-items-center"> <span class="card-header-icon mr-2"><i class="tio-neighborhood"></i></span> <span>{{__('messages.business')}} {{__('Notification Messages')}}</span></h4>
+                                        <p class="mb-0 text-muted small">{{ __('Notification messages are now managed per zone. Use Zone Business Settings for configuration.') }}</p>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="alert alert-info mb-0">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <h6 class="alert-heading">{{ __('Zone-Specific Notification Messages') }}</h6>
+                                                    <p class="mb-0">{{ __('All notification messages (order confirmation, delivery, cancellation, etc.) are now configured per zone for better localization and control.') }}</p>
+                                                </div>
+                                                <div class="ml-3">
+                                                    <a href="{{ route('admin.zone.business-settings.index') }}" class="btn btn-info btn-sm">
+                                                        <i class="tio-settings-outlined"></i>
+                                                        {{ __('Configure') }}
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="card-title m-0 d-flex align-items-center"> <span class="card-header-icon mr-2"><i class="tio-settings-outlined"></i></span> <span>{{__('messages.business')}} {{__('messages.setting')}}</span></h4>
+                                    </div>
+                                    <div class="card-body">
+
+
+                                        <!-- This is Latest Desgin of Business Setting -->
+                                        <div class="row">
+                                            <div class="col-xl-4 col-lg-4 col-sm-6">
+                                                @php($ev = \App\Models\BusinessSetting::where('key', 'customer_verification')->first())
+                                                @php($ev = $ev ? $ev->value : 0)
+                                                <div class="form-group">
+                                                    <label class="form-check form-check form-switch form-check-inline d-flex justify-content-between border rounded px-3 px-xl-4 form-control">
+                                                        <span class="pr-2 d-flex align-items-center">
+                                                            <span class="line--limit-1">{{ __('messages.customer') }} {{ __('messages.verification') }}</span>
+                                                            <span class="input-label-secondary text--title" data-bs-toggle="tooltip" title="Tooltip on top" data-bs-placement="right" data-bs-title="{{__('If you turn on this, customers have to verify their phone number through an OTP and you need to set up an SMS gateway before turning on this.')}}">
+                                                                &nbsp;<i style="font-size: 1.5rem">&#9432;</i>
+                                                            </span>
+                                                        </span>
+                                                        <input type="checkbox" class="form-check-input" value="1" name="customer_verification" {{ $ev == 1 ? 'checked' : '' }}>
+                                                        <span class="toggle-switch-label text">
+                                                            <span class="toggle-switch-indicator"></span>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-4 col-lg-4 col-sm-6">
+                                                @php($restaurant_self_registration = \App\Models\BusinessSetting::where('key', 'toggle_restaurant_registration')->first())
+                                                @php($restaurant_self_registration = $restaurant_self_registration ? $restaurant_self_registration->value : 0)
+                                                <div class="form-group">
+                                                    <label class="form-check form-check form-switch form-check-inline d-flex justify-content-between border rounded px-3 px-xl-4 form-control">
+                                                        <span class="pr-2 d-flex align-items-center">
+                                                            <span class="line--limit-1">{{ __('messages.restaurant_self_registration') }}</span>
+                                                            <span class="input-label-secondary text--title" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="{{__('If this field is active, restaurants can register themself using the restaurant app, user app, or website.')}}">
+                                                                &nbsp;<i style="font-size:18px;text-transform:lowercase;">&#9432;</i>
+                                                            </span>
+                                                        </span>
+                                                        <input type="checkbox" class="form-check-input" value="1" name="restaurant_self_registration" {{ $restaurant_self_registration == 1 ? 'checked' : '' }}>
+                                                        <span class="toggle-switch-label text">
+                                                            <span class="toggle-switch-indicator"></span>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-4 col-lg-4 col-sm-6">
+                                                @php($dm_self_registration = \App\Models\BusinessSetting::where('key', 'toggle_dm_registration')->first())
+                                                @php($dm_self_registration = $dm_self_registration ? $dm_self_registration->value : 0)
+                                                <div class="form-group">
+                                                    <label class="form-check form-check form-switch form-check-inline d-flex justify-content-between border rounded px-3 px-xl-4 form-control">
+                                                        <span class="pr-2 d-flex align-items-center">
+
+                                                            <span class="line--limit-1">{{ __('messages.dm_self_registration') }}</span><span class="input-label-secondary text--title" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="{{__('When this field is active, delivery men can register themself using the delivery man app, user app, or website.')}}">
+                                                                &nbsp;<i style="font-size:18px;text-transform:lowercase;">&#9432;</i>
+                                                            </span></span>
+                                                        <input type="checkbox" class="form-check-input" value="1" name="dm_self_registration" {{ $dm_self_registration == 1 ? 'checked' : '' }}>
+                                                        <span class="toggle-switch-label text">
+                                                            <span class="toggle-switch-indicator"></span>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-4 col-lg-4 col-sm-6">
+                                                @php($admin_order_notification = \App\Models\BusinessSetting::where('key', 'admin_order_notification')->first())
+                                                @php($admin_order_notification = $admin_order_notification ? $admin_order_notification->value : 0)
+                                                <div class="form-group">
+                                                    <label class="form-check form-check form-switch form-check-inline d-flex justify-content-between border rounded px-3 px-xl-4 form-control">
+                                                        <span class="pr-2 d-flex align-items-center"><span class="line--limit-1">{{ __('messages.admin') }}
+                                                                {{ __('messages.order') }} {{ __('messages.notification') }}</span><span class="input-label-secondary text--title" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="{{__('Turning on this, admin will get a popup notification with sound for all orders.')}}">
+                                                                &nbsp;<i style="font-size:18px;text-transform:lowercase;">&#9432;</i>
+                                                            </span></span>
+                                                        <input type="checkbox" class="form-check-input" value="1" name="admin_order_notification" {{ $admin_order_notification == 1 ? 'checked' : '' }}>
+                                                        <span class="toggle-switch-label text">
+                                                            <span class="toggle-switch-indicator"></span>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-4 col-lg-4 col-sm-6">
+                                                @php($schedule_order = \App\Models\BusinessSetting::where('key', 'schedule_order')->first())
+                                                @php($schedule_order = $schedule_order ? $schedule_order->value : 0)
+                                                <div class="form-group">
+                                                    <label class="form-check form-check form-switch form-check-inline d-flex justify-content-between border rounded px-3 px-xl-4 form-control">
+                                                        <span class="pr-2 d-flex align-items-center"><span class="line--limit-1">{{ __('messages.scheduled') }}
+                                                                {{ __('messages.orders') }}</span><span class="input-label-secondary text--title" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="{{__('After activating this field, customers are able to place scheduled orders.')}}">
+                                                                &nbsp;<i style="font-size:18px;text-transform:lowercase;">&#9432;</i>
+                                                            </span></span>
+                                                        <input type="checkbox" value="1" name="schedule_order" class="form-check-input" {{ $schedule_order == 1 ? 'checked' : '' }}>
+                                                        <span class="toggle-switch-label text">
+                                                            <span class="toggle-switch-indicator"></span>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-4 col-lg-4 col-sm-6">
+                                                @php($odc = \App\Models\BusinessSetting::where('key', 'order_delivery_verification')->first())
+                                                @php($odc = $odc ? $odc->value : 0)
+                                                <div class="form-group">
+                                                    <label class="form-check form-check form-switch form-check-inline d-flex justify-content-between border rounded px-3 px-xl-4 form-control">
+                                                        <span class="pr-2 d-flex align-items-center"><span class="line--limit-1">{{ __('messages.order') }}
+                                                                {{ __('messages.delivery') }} {{ __('messages.verification') }}</span><span class="input-label-secondary text--title" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="{{__('If this field is active, customers have to provide a 4-digit code to the delivery man to deliver an order successfully. Customers will get this code in order details.')}}">
+                                                                &nbsp;<i style="font-size:18px;text-transform:lowercase;">&#9432;</i>
+                                                            </span></span>
+                                                        <input type="checkbox" class="form-check-input" value="1" name="odc" {{ $odc == 1 ? 'checked' : '' }}>
+                                                        <span class="toggle-switch-label text">
+                                                            <span class="toggle-switch-indicator"></span>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-4 col-lg-4 col-sm-6">
+                                                @php($dm_tips_status = \App\Models\BusinessSetting::where('key', 'dm_tips_status')->first())
+                                                @php($dm_tips_status = $dm_tips_status ? $dm_tips_status->value : 'deliveryman')
+                                                <div class="form-group">
+                                                    <label class="form-check form-check form-switch form-check-inline d-flex justify-content-between border rounded px-3 px-xl-4 form-control">
+                                                        <span class="pr-2 d-flex align-items-center"><span class="line--limit-1">{{ __('DM Tips Option') }}</span><span class="input-label-secondary text--title" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="{{__('If this option is enabled, the Delivery men Tip option will show on the user app & web app during order placement.')}}">
+                                                                &nbsp;<i style="font-size:18px;text-transform:lowercase;">&#9432;</i>
+                                                            </span></span>
+                                                        <input type="checkbox" class="form-check-input" value="1" name="dm_tips_status" {{ $dm_tips_status == '1' ? 'checked' : '' }}>
+                                                        <span class="toggle-switch-label text">
+                                                            <span class="toggle-switch-indicator"></span>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-4 col-lg-4 col-sm-6">
+                                                @php($show_dm_earning = \App\Models\BusinessSetting::where('key', 'show_dm_earning')->first())
+                                                @php($show_dm_earning = $show_dm_earning ? $show_dm_earning->value : 0)
+                                                <div class="form-group">
+                                                    <label class="form-check form-check form-switch form-check-inline d-flex justify-content-between border rounded px-3 px-xl-4 form-control">
+                                                        <span class="pr-2 d-flex align-items-center"><span class="line--limit-1">{{ __('messages.show_earning_for_each_order') }}
+                                                            </span>
+                                                            <span class="input-label-secondary text--title" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="{{__('If this field is enabled, the delivery man is able to see the earnings when accepting the order on the order request page.')}}">
+                                                                &nbsp;<i style="font-size:18px;text-transform:lowercase;">&#9432;</i>
+                                                            </span></span>
+                                                        <input type="checkbox" class="form-check-input" value="1" name="show_dm_earning" {{ $show_dm_earning == 1 ? 'checked' : '' }}>
+                                                        <span class="toggle-switch-label text">
+                                                            <span class="toggle-switch-indicator"></span>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-4 col-lg-4 col-sm-6">
+                                                @php($vnv = \App\Models\BusinessSetting::where('key', 'toggle_veg_non_veg')->first())
+                                                @php($vnv = $vnv ? $vnv->value : 0)
+                                                <div class="form-group">
+                                                    <label class="form-check form-check form-switch form-check-inline d-flex justify-content-between border rounded px-3 px-xl-4 form-control">
+                                                        <span class="pr-2 d-flex align-items-center"><span class="line--limit-1">{{ __('Veg / Non Veg Option') }}</span><span class="input-label-secondary text--title" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="{{__('When this field is active, the restaurants and the customers both can see the veg/non-veg tag.')}}">
+                                                                &nbsp;<i style="font-size:18px;text-transform:lowercase;">&#9432;</i>
+                                                            </span></span>
+                                                        <input type="checkbox" class="form-check-input" value="1" name="vnv" {{ $vnv == 1 ? 'checked' : '' }}>
+                                                        <span class="toggle-switch-label text">
+                                                            <span class="toggle-switch-indicator"></span>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="col-xl-4 col-lg-4 col-sm-6">
+                                                @php($business_model = \App\Models\BusinessSetting::where('key', 'business_model')->first())
+                                                @php($business_model = $business_model ? json_decode($business_model->value, true) : 0)
+                                                <div class="form-group">
+                                                    <label class="form-check form-check form-switch form-check-inline d-flex justify-content-between border rounded px-3 px-xl-4 form-control">
+                                                        <span class="pr-2 d-flex align-items-center"><span class="line--limit-1">{{ __('Commission') }}</span><span class="input-label-secondary text--title" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="{{__('This option will changes the Restaurant Business to Commission Based')}}">
+                                                                &nbsp;<i style="font-size:18px;text-transform:lowercase;">&#9432;</i>
+                                                            </span></span>
+                                                        <input type="checkbox" class="form-check-input" value="1" name="commission" id="commission_id" {{ isset($business_model['commission']) ? ($business_model['commission'] == 1 ? 'checked' : '') : '' }}>
+                                                        <span class="toggle-switch-label text">
+                                                            <span class="toggle-switch-indicator"></span>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-4 col-lg-4 col-sm-6">
+                                                <div class="form-group">
+                                                    <label class="form-check form-check form-switch form-check-inline d-flex justify-content-between border rounded px-3 px-xl-4 form-control">
+                                                        <span class="pr-2 d-flex align-items-center"><span class="line--limit-1">{{ __('subscription') }}</span><span class="input-label-secondary text--title" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="{{__('This option will changes the Restaurant Business to Package Based Subscription Model')}}">
+                                                                &nbsp;<i style="font-size:18px;text-transform:lowercase;">&#9432;</i>
+                                                            </span></span>
+                                                        <input type="checkbox" class="form-check-input" value="1" name="subscription" id='subscription_id' {{-- onclick="form_alert('Business_Model_change','{{ __('messages.You_want_to_Change_the_Business_Model_for ') }} {{ __('messages.This_will_expire_the_current_package') }}')" --}} {{-- onclick='function_f()' --}} {{ isset($business_model['subscription']) ? ($business_model['subscription'] == 1 ? 'checked' : '') : '' }}>
+                                                        <span class="toggle-switch-label text">
+                                                            <span class="toggle-switch-indicator"></span>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+
+
+                                            <div class="col-xl-4 col-lg-4 col-sm-6">
+                                                @php($order_subscription = \App\Models\BusinessSetting::where('key', 'order_subscription')->first())
+                                                @php($order_subscription = $order_subscription ? $order_subscription->value : 0)
+                                                <div class="form-group">
+                                                    <label class="form-check form-check form-switch form-check-inline d-flex justify-content-between border rounded px-3 px-xl-4 form-control">
+                                                        <span class="pr-2 d-flex align-items-center">
+                                                            <span class="line--limit-1">{{ __('order_subscription') }}</span><span class="input-label-secondary text--title" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="{{__('order_subscription_hint')}}">
+                                                                &nbsp;<i style="font-size:18px;text-transform:lowercase;">&#9432;</i>
+                                                            </span></span>
+                                                        <input type="checkbox" class="form-check-input" value="1" name="order_subscription" {{  $order_subscription == 1 ? 'checked' : '' }}>
+                                                        <span class="toggle-switch-label text">
+                                                            <span class="toggle-switch-indicator"></span>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-xl-4 col-lg-4 col-sm-6">
+                                                @php($order_confirmation_model = \App\Models\BusinessSetting::where('key', 'order_confirmation_model')->first())
+                                                @php($order_confirmation_model = $order_confirmation_model ? $order_confirmation_model->value : 'deliveryman')
+                                                <div class="form-group">
+                                                    <label class="input-label text-capitalize d-flex alig-items-center"><span class="line--limit-1">{{ __('messages.order_confirmation_model') }}</span> <span class="input-label-secondary text--title" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="{{__('The chosen model will confirm the order first. For example, if you choose the delivery confirmation model then the delivery men will get the orders before the restaurants and confirm for delivery and after confirmation by the delivery men, the restaurants will get the order for processing.')}}">
+                                                            &nbsp;<i style="font-size:18px;text-transform:lowercase;">&#9432;</i>
+                                                        </span></label>
+                                                    <div class="resturant-type-group border">
+                                                        <label class="form-check form-check-inline mr-2 mr-md-4">
+                                                            <input class="form-check-input" type="radio" value="restaurant" name="order_confirmation_model" id="order_confirmation_model" {{ $order_confirmation_model == 'restaurant' ? 'checked' : '' }}>
+                                                            <span class="form-check-label">
+                                                                {{ __('messages.restaurant') }}
+                                                            </span>
+                                                        </label>
+                                                        <label class="form-check form-check-inline mr-2 mr-md-4">
+                                                            <input class="form-check-input" type="radio" value="deliveryman" name="order_confirmation_model" id="order_confirmation_model2" {{ $order_confirmation_model == 'deliveryman' ? 'checked' : '' }}>
+                                                            <span class="form-check-label">
+                                                                {{ __('messages.deliveryman') }}
+                                                            </span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-xl-4 col-lg-4 col-sm-6">
+                                                @php($canceled_by_deliveryman = \App\Models\BusinessSetting::where('key', 'canceled_by_deliveryman')->first())
+                                                @php($canceled_by_deliveryman = $canceled_by_deliveryman ? $canceled_by_deliveryman->value : 0)
+                                                <div class="form-group">
+                                                    <label class="input-label text-capitalize d-flex alig-items-center"><span class="line--limit-1">{{__('Delivery Man can Cancel Order')}}</span> <span class="input-label-secondary text--title" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="{{__('Order cancellation is possible by the delivery person if "Yes" is chosen .')}}">
+                                                            &nbsp;<i style="font-size:18px;text-transform:lowercase;">&#9432;</i>
+                                                        </span></label>
+                                                    <div class="resturant-type-group border">
+                                                        <label class="form-check form-check-inline mr-2 mr-md-4">
+                                                            <input class="form-check-input" type="radio" value="1" name="canceled_by_deliveryman" id="canceled_by_deliveryman" {{ $canceled_by_deliveryman == 1 ? 'checked' : '' }}>
+                                                            <span class="form-check-label">
+                                                                {{ __('yes') }}
+                                                            </span>
+                                                        </label>
+                                                        <label class="form-check form-check-inline mr-2 mr-md-4">
+                                                            <input class="form-check-input" type="radio" value="0" name="canceled_by_deliveryman" id="canceled_by_deliveryman2" {{ $canceled_by_deliveryman == 0 ? 'checked' : '' }}>
+                                                            <span class="form-check-label">
+                                                                {{ __('no') }}
+                                                            </span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-4 col-lg-4 col-sm-6">
+                                                @php($canceled_by_restaurant = \App\Models\BusinessSetting::where('key', 'canceled_by_restaurant')->first())
+                                                @php($canceled_by_restaurant = $canceled_by_restaurant ? $canceled_by_restaurant->value : 0)
+                                                <div class="form-group">
+                                                    <label class="input-label text-capitalize d-flex alig-items-center"><span class="line--limit-1">{{ __('Restaurant Can Cancel Order') }} </span><span class="input-label-secondary text--title" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="{{__('Order cancellation is possible by the restaurant if "Yes" is chosen .')}}">
+                                                            &nbsp;<i style="font-size:18px;text-transform:lowercase;">&#9432;</i>
+                                                        </span></label>
+                                                    <div class="resturant-type-group border">
+                                                        <label class="form-check form-check-inline mr-2 mr-md-4">
+                                                            <input class="form-check-input" type="radio" value="1" name="canceled_by_restaurant" id="canceled_by_restaurant" {{ $canceled_by_restaurant == 1 ? 'checked' : '' }}>
+                                                            <span class="form-check-label">
+                                                                {{ __('yes') }}
+                                                            </span>
+                                                        </label>
+                                                        <label class="form-check form-check-inline mr-2 mr-md-4">
+                                                            <input class="form-check-input" type="radio" value="0" name="canceled_by_restaurant" id="canceled_by_restaurant2" {{ $canceled_by_restaurant == 0 ? 'checked' : '' }}>
+                                                            <span class="form-check-label">
+                                                                {{ __('no') }}
+                                                            </span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- This is Latest Desgin of Business Setting -->
+
+
+                                        <div class="row">
+                                            <div class="col-md-4 col-12">
+                                                @php($schedule_order_slot_duration = \App\Models\BusinessSetting::where('key', 'schedule_order_slot_duration')->first())
+                                                <div class="form-group">
+                                                    <label class="input-label text-capitalize d-flex alig-items-center" for="schedule_order_slot_duration">
+                                                        <span class="line--limit-1">{{ __('messages.Schedule order slot duration') }}
+                                                            {{ __('messages.minute') }}</span><span class="input-label-secondary text--title" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="{{__('The schedule order time slot will be managed by this value. For example, If you set 30 minutes in this section then you will see 10.30 to 11 or 11.00 to 11.30 or 11.30 to 12.00 when ordering user apps.')}}">
+                                                            &nbsp;<i style="font-size:18px;text-transform:lowercase;">&#9432;</i>
+                                                        </span>
+                                                    </label>
+                                                    <input type="number" name="schedule_order_slot_duration" class="form-control" id="schedule_order_slot_duration" value="{{ $schedule_order_slot_duration ? $schedule_order_slot_duration->value : 0 }}" min="0" required placeholder="{{ __('messages.Ex :') }} ABC Company">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 col-12">
+                                                @php($dm_maximum_orders = \App\Models\BusinessSetting::where('key', 'dm_maximum_orders')->first())
+                                                <div class="form-group">
+                                                    <label class="input-label text-capitalize d-flex alig-items-center" for="dm_maximum_orders"><span class="line--limit-1">{{ __('messages.dm_maximum_order') }}</span>
+                                                        <span data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="{{__('The given number will be the maximum ongoing orders for a delivery man.') }}" class="input-label-secondary">
+                                                            &nbsp;<i style="font-size:18px;text-transform:lowercase;">&#9432;</i></span>
+                                                    </label>
+                                                    <input type="number" name="dm_maximum_orders" class="form-control" id="dm_maximum_orders" min="1" value="{{ $dm_maximum_orders ? $dm_maximum_orders->value : 1 }}" required placeholder="{{ __('messages.Ex :') }} +9XXX-XXX-XXXX">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 col-12">
+                                                @php($free_delivery_over = \App\Models\BusinessSetting::where('key', 'free_delivery_over')->first())
+                                                <div class="form-group">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <label class="input-label text-capitalize d-inline-flex alig-items-center" for="free_delivery_over">
+                                                            <span class="line--limit-1">{{ __('messages.free_delivery_over') }} ({{ \App\CentralLogics\Helpers::currency_symbol() }})</span>
+
+                                                            <span data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="{{__(' If the order amount exceeds this amount the delivery fee will be free and the delivery fee will be deducted from the admin’s commission.')}}" class="input-label-secondary">&nbsp;<i style="font-size:18px;text-transform:lowercase;">&#9432;</i></span>
+                                                        </label>
+                                                        <label class="form-check form-check-inline form-switch  ml-3 float-right">
+                                                            <input type="checkbox" class="status form-check-input" data-delivery-free="0" name="free_delivery_over_status" id="free_delivery_over_status" value="1" {{ isset($free_delivery_over->value) ? 'checked' : '' }}>
+                                                        </label>
+                                                    </div>
+                                                    <input type="number" name="free_delivery_over" data-delivery-fee="0" class="form-control" id="free_delivery_over" value="{{ $free_delivery_over ? $free_delivery_over->value : 0 }}" min="0" step=".01" placeholder="{{ __('messages.Ex :') }} 100" required {{ isset($free_delivery_over->value) ? '' : 'readonly' }}>
+                                                </div>
+                                                <script>
+                                                    document.querySelector('[data-delivery-free]').addEventListener('change', event => {
+                                                        const elem = event.target;
+                                                        const deliveryFeeInput = document.querySelector('[data-delivery-fee]');
+                                                        elem.checked ? deliveryFeeInput.removeAttribute('readonly') : deliveryFeeInput.setAttribute('readonly', 'readonly');
+                                                    });
+                                                </script>
+                                            </div>
+
+                                            <div class="col-md-4 col-12">
+                                                @php($dm_max_cash_in_hand = \App\Models\BusinessSetting::where('key', 'dm_max_cash_in_hand')->first())
+                                                <div class="form-group">
+                                                    <label class="input-label d-flex text-capitalize" for="dm_max_cash_in_hand">
+                                                        <span class="line--limit-1">
+                                                            {{__('Delivery Man Maximum Cash in Hand')}} ({{ \App\CentralLogics\Helpers::currency_symbol() }})
+                                                        </span>
+                                                        <span data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="{{__('If the cash in hand for a delivery man exceeds this amount the delivery man cannot accept new orders before depositing the amount to admin.')}}" class="input-label-secondary">&nbsp;<i style="font-size:18px;text-transform:lowercase;">&#9432;</i></span>
+                                                    </label>
+                                                    <input type="number" name="dm_max_cash_in_hand" class="form-control" id="dm_max_cash_in_hand" min="0" step=".001" value="{{ $dm_max_cash_in_hand ? $dm_max_cash_in_hand->value : 0 }}" required>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="col-md-4 col-12">
+                                                @php($admin_commission = \App\Models\BusinessSetting::where('key', 'admin_commission')->first())
+                                                <div class="form-group">
+                                                    <label class="input-label text-capitalize d-flex alig-items-center" for="admin_commission">{{ __('messages.admin_commission') }} (%)</label>
+                                                    <input type="number" name="admin_commission" class="form-control" id="admin_commission" value="{{ $admin_commission ? $admin_commission->value : 0 }}" min="0" max="100" required>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4 col-12">
+                                                @php($delivery_charge_comission = \App\Models\BusinessSetting::where('key', 'delivery_charge_comission')->first())
+                                                <div class="form-group">
+                                                    <label class="input-label text-capitalize d-flex alig-items-center" for="admin_comission_in_delivery_charge">{{__('Admin Comission in Delivery Charge')}} (%)</label>
+                                                    <input type="number" name="admin_comission_in_delivery_charge" class="form-control" id="admin_comission_in_delivery_charge" min="0" max="100" step="0.01" value="{{ $delivery_charge_comission ? $delivery_charge_comission->value: 0 }}">
+                                                </div>
+                                            </div>
+
+                                            <!-- Loyalty System Settings -->
+                                            <div class="col-md-4 col-12">
+                                                @php($loyalty_percent = \App\Models\BusinessSetting::where('key', 'loyalty_percent')->first())
+                                                <div class="form-group">
+                                                    <label class="input-label text-capitalize d-flex alig-items-center" for="loyalty_percent">{{__('Loyalty Points Percentage')}} (%)<span class="input-label-secondary text--title" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="{{__('Percentage of order amount to be awarded as loyalty points')}}">
+                                                        &nbsp;<i style="font-size:18px;text-transform:lowercase;">&#9432;</i>
+                                                    </span></label>
+                                                    <input type="number" name="loyalty_percent" class="form-control" id="loyalty_percent" min="0" max="100" step="0.01" value="{{ $loyalty_percent ? $loyalty_percent->value : 0 }}">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4 col-12">
+                                                @php($loyalty_value = \App\Models\BusinessSetting::where('key', 'loyalty_value')->first())
+                                                <div class="form-group">
+                                                    <label class="input-label text-capitalize d-flex alig-items-center" for="loyalty_value">{{__('Loyalty Point Value')}} ({{ Helpers::currency_symbol() }})<span class="input-label-secondary text--title" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="{{__('Value of 1 loyalty point in currency')}}">
+                                                        &nbsp;<i style="font-size:18px;text-transform:lowercase;">&#9432;</i>
+                                                    </span></label>
+                                                    <input type="number" name="loyalty_value" class="form-control" id="loyalty_value" min="0" step="0.01" value="{{ $loyalty_value ? $loyalty_value->value : 1 }}">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4 col-12">
+                                                @php($minimum_redeem_value = \App\Models\BusinessSetting::where('key', 'minimum_redeem_value')->first())
+                                                <div class="form-group">
+                                                    <label class="input-label text-capitalize d-flex alig-items-center" for="minimum_redeem_value">{{__('Minimum Redeem Value')}} ({{ Helpers::currency_symbol() }})<span class="input-label-secondary text--title" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="{{__('Minimum value required to redeem loyalty points')}}">
+                                                        &nbsp;<i style="font-size:18px;text-transform:lowercase;">&#9432;</i>
+                                                    </span></label>
+                                                    <input type="number" name="minimum_redeem_value" class="form-control" id="minimum_redeem_value" min="0" step="0.01" value="{{ $minimum_redeem_value ? $minimum_redeem_value->value : 10 }}">
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+
+                                        <!-- Footer Text Commented Out For Removing Purpose -->
+
+                                        <!-- Footer Text Commented Out For Removing Purpose -->
+                                        <div class="btn--container justify-content-end">
+                                            <button type="reset" id="reset_btn" class="btn btn-outline-secondary">{{ __('messages.Reset') }} </button>
+                                            <button type="{{ env('APP_MODE') != 'demo' ? 'submit' : 'button' }}" onclick="{{ env('APP_MODE') != 'demo' ? '' : 'call_demo()' }}" class="btn btn-outline-primary ">
+                                                <svg fill="currentColor" width="20px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 302.089 302.089" xml:space="preserve">
+                                                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                                    <g id="SVGRepo_iconCarrier">
+                                                        <g>
+                                                            <g id="Layer_5_44_">
+                                                                <g>
+                                                                    <g>
+                                                                        <path d="M221.209,161.634c0,2.691-2.201,4.895-4.893,4.895H55.181c-2.693,0-4.893-2.203-4.893-4.895v-3.261 c0-2.691,2.2-4.894,4.893-4.894h161.135c2.691,0,4.893,2.202,4.893,4.894V161.634z"></path>
+                                                                    </g>
+                                                                    <g>
+                                                                        <path d="M149.197,200.301c0,2.691-2.201,4.895-4.892,4.895H55.182c-2.693,0-4.893-2.203-4.893-4.895v-3.261 c0-2.691,2.2-4.893,4.893-4.893h89.123c2.691,0,4.892,2.202,4.892,4.893V200.301z"></path>
+                                                                    </g>
+                                                                    <path d="M270.764,0.001c0,0-18.179,0-24.238,0c-4.5,0-4.053,4.126-4.053,4.126v64.506c0,6.263-5.125,11.388-11.388,11.388H71.004 c-6.263,0-11.388-5.125-11.388-11.388c0,0,0-49.766,0-66.444c0-2.188-1.836-2.188-1.836-2.188H31.325c-11,0-20,9-20,20v262.088 c0,11,9,20,20,20h239.439c11,0,20-9,20-20V20C290.764,9.001,281.764,0.001,270.764,0.001z M265.043,247c0,4.95-4.05,9-9,9H46.047 c-4.95,0-9-4.05-9-9V137c0-4.95,4.05-9,9-9h209.996c4.95,0,9,4.05,9,9V247z"></path>
+                                                                    <path d="M90.28,0.001c-1.958,0-1.714,1.899-1.714,1.899v59.339c0,2.75,2.25,5,5,5h17.82c2.75,0,5-2.25,5-5V1.807 c0,0,0-1.807-1.794-1.807C108.436,0.001,96.806,0.001,90.28,0.001z"></path>
+                                                                </g>
+                                                            </g>
+                                                        </g>
+                                                    </g>
+                                                </svg>
+                                                {{ __('messages.save') }} {{__('messages.info')}}</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </form>
+
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">{{ __('Email Configuration') }}</h4>
+                                </div>
+                                @php($mailConfig = \App\Models\BusinessSetting::where('key', 'mail_config')->first())
+                                @php($mailConfig = json_decode($mailConfig?->value) ?? null)
+
+
+                                <div class="card-body">
+                                    <form action="{{route('admin.business-settings.email-setup')}}" class="row" method="POST">
+                                        @csrf
+                                        @method('POST')
+
+                                        <div class="form-group col-md-6">
+                                            <label for="mail_mailer">Mailer</label>
+                                            <input type="text" class="form-control" id="mail_mailer" name="mail_mailer" value="{{ $mailConfig->mail_mailer ?? '' }}" required>
+                                        </div>
+
+                                        <div class="form-group col-md-6">
+                                            <label for="mail_host">Host</label>
+                                            <input type="text" class="form-control" id="mail_host" name="mail_host" value="{{ $mailConfig->mail_host ?? '' }}" required>
+                                        </div>
+
+                                        <div class="form-group col-md-6">
+                                            <label for="mail_port">Port</label>
+                                            <input type="text" class="form-control" id="mail_port" name="mail_port" value="{{ $mailConfig->mail_port ?? '' }}" required>
+                                        </div>
+
+                                        <div class="form-group col-md-6">
+                                            <label for="mail_username">Username</label>
+                                            <input type="text" class="form-control" id="mail_username" name="mail_username" value="{{ $mailConfig->mail_username ?? '' }}" required>
+                                        </div>
+
+                                        <div class="form-group col-md-6">
+                                            <label for="mail_password">Password</label>
+                                            <input type="password" class="form-control" id="mail_password" name="mail_password" value="{{ $mailConfig->mail_password ?? '' }}" required>
+                                        </div>
+
+                                        <div class="form-group col-md-6">
+                                            <label for="mail_encryption">Encryption</label>
+                                            <input type="text" class="form-control" id="mail_encryption" name="mail_encryption" value="{{ $mailConfig->mail_encryption ?? '' }}" required>
+                                        </div>
+
+                                        <div class="form-group col-md-6">
+                                            <label for="mail_from_address">From Email</label>
+                                            <input type="text" class="form-control" id="mail_from_address" name="mail_from_address" value="{{ $mailConfig->mail_from_address ?? '' }}" required>
+                                        </div>
+
+                                        <div class="form-group col-md-6">
+                                            <label for="mail_from_name">From Name</label>
+                                            <input type="text" class="form-control" id="mail_from_name" name="mail_from_name" value="{{ $mailConfig->mail_from_name ?? '' }}" required>
+                                        </div>
+                                        <div class="btn--container col-md-6 justify-content-end">
+                                            <button type="reset" class="btn btn-outline-secondary">Reset </button>
+                                            <button type="submit" class="btn btn-outline-primary ">
+                                                <svg fill="currentColor" width="20px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 302.089 302.089" xml:space="preserve">
+                                                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                                                    <g id="SVGRepo_iconCarrier">
+                                                        <g>
+                                                            <g id="Layer_5_44_">
+                                                                <g>
+                                                                    <g>
+                                                                        <path d="M221.209,161.634c0,2.691-2.201,4.895-4.893,4.895H55.181c-2.693,0-4.893-2.203-4.893-4.895v-3.261 c0-2.691,2.2-4.894,4.893-4.894h161.135c2.691,0,4.893,2.202,4.893,4.894V161.634z"></path>
+                                                                    </g>
+                                                                    <g>
+                                                                        <path d="M149.197,200.301c0,2.691-2.201,4.895-4.892,4.895H55.182c-2.693,0-4.893-2.203-4.893-4.895v-3.261 c0-2.691,2.2-4.893,4.893-4.893h89.123c2.691,0,4.892,2.202,4.892,4.893V200.301z"></path>
+                                                                    </g>
+                                                                    <path d="M270.764,0.001c0,0-18.179,0-24.238,0c-4.5,0-4.053,4.126-4.053,4.126v64.506c0,6.263-5.125,11.388-11.388,11.388H71.004 c-6.263,0-11.388-5.125-11.388-11.388c0,0,0-49.766,0-66.444c0-2.188-1.836-2.188-1.836-2.188H31.325c-11,0-20,9-20,20v262.088 c0,11,9,20,20,20h239.439c11,0,20-9,20-20V20C290.764,9.001,281.764,0.001,270.764,0.001z M265.043,247c0,4.95-4.05,9-9,9H46.047 c-4.95,0-9-4.05-9-9V137c0-4.95,4.05-9,9-9h209.996c4.95,0,9,4.05,9,9V247z"></path>
+                                                                    <path d="M90.28,0.001c-1.958,0-1.714,1.899-1.714,1.899v59.339c0,2.75,2.25,5,5,5h17.82c2.75,0,5-2.25,5-5V1.807 c0,0,0-1.807-1.794-1.807C108.436,0.001,96.806,0.001,90.28,0.001z"></path>
+                                                                </g>
+                                                            </g>
+                                                        </g>
+                                                    </g>
+                                                </svg>
+                                                Save Information</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+@push('javascript')
+<script src="{{asset('assets/js/plugins/spartan-multi-image-picker.min.js')}}"></script>
+{{-- <script>
+    function handleError(errorResponse) {
+        console.log(errorResponse)
+        if (errorResponse && errorResponse.errors) {
+            if (Array.isArray(errorResponse.errors)) {
+                const errorMessages = Object.values(errorResponse.errors);
+                const errorList = errorMessages.map(item => `<li>${item.message}</li>`);
+                return `<ul>${errorList.join('')}</ul>`;
+            }
+            if (typeof errorResponse.errors === 'string') {
+                return errorResponse.errors;
+            }
+            if (typeof errorResponse.errors === 'object') {
+                const errorMessages = Object.values(errorResponse.errors);
+                const errorList = errorMessages.map(item => `<li>${item}</li>`);
+                return `<ul>${errorList.join('')}</ul>`;
+            }
+        }
+        return errorResponse.error;
+    }
+</script> --}}
+
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBPVVxuVkmdE1GzSgIqm_9dx64tea7Wltk&libraries=geometry,places"></script>
+<script src="{{asset('assets/js/Helpers/mapHelper.js')}}"></script>
+<script>
+function initMap() {
+    navigator.geolocation.getCurrentPosition((position) => {
+        @if($default_location)
+        const currentLocation = {
+            lat: {{$default_location['lat']}},
+            lng: {{$default_location['lng']}}
+        };
+        @else
+        const currentLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+        };
+        @endif
+
+        myMap.CreateMap(currentLocation, {
+            selector: "#map-canvas", // corrected syntax for object properties
+            marker: {
+                location: currentLocation,
+                img: "{{ asset('assets/user/img/icons/marker-icon.png') }}",
+                draggable: true
+            }
+        });
+
+        var input = document.getElementById('search-address-input');
+        var autocomplete = new google.maps.places.Autocomplete(input);
+        autocomplete.addListener('place_changed', function() {
+            var place = autocomplete.getPlace();
+
+            if (!place.geometry) {
+                console.log("No details available for input: '" + place.name + "'");
+                return;
+            }
+            getAddress(place.geometry.location)
+        })
+
+        //drag marker to get posion
+        google.maps.event.addListener(myMap.marker, 'dragend', function() {
+            myMap.map.setCenter(myMap.marker.getPosition().toJSON());
+            myMap.marker.setPosition(myMap.marker.getPosition().toJSON());
+            myMap.setElementsPosition(myMap.marker.getPosition().toJSON());
+        });
+
+    });
+}
+
+initMap();
+</script>
+
+<script>
+    function readImage(input,selector) {
+    try{
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const imgSrc = e.target.result;
+            document.querySelector(selector).src = imgSrc;
+        };
+        reader.readAsDataURL(input.files[0]);
+    }catch(error){
+        console.error(error);
+    }
+
+}
+</script>
+
+
+
+@endpush

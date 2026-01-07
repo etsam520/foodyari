@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="25">
+    <path fill="#303c42"
+        d="M12 0C7.589 0 4 3.589 4 8c0 1.324.331 2.637.96 3.802l6.602 11.94a.5.5 0 0 0 .875 0l6.605-11.944A8.014 8.014 0 0 0 20 8c0-4.411-3.589-8-8-8z"
+        class="color303C42 svgShape"></path>
+    <path fill="#1e88e5"
+        d="M18.165 11.318L12 22.467 5.838 11.322A7.009 7.009 0 0 1 5 8c0-3.86 3.14-7 7-7s7 3.14 7 7c0 1.159-.29 2.308-.835 3.318z"
+        class="color1E88E5 svgShape"></path>
+    <circle cx="12" cy="8" r="5.5" fill="#303c42" class="color303C42 svgShape"></circle>
+    <path fill="#1e88e5"
+        d="M9.45 11.7c.676-.353 1.574-.7 2.55-.7.975 0 1.873.347 2.55.7a4.47 4.47 0 0 1-5.1 0z"
+        class="color1E88E5 svgShape"></path>
+    <path fill="#e6e6e6"
+        d="M15.339 10.989C14.539 10.527 13.338 10 12 10s-2.54.528-3.34.988A4.465 4.465 0 0 1 7.5 8c0-2.481 2.019-4.5 4.5-4.5s4.5 2.019 4.5 4.5a4.465 4.465 0 0 1-1.161 2.989z"
+        class="colorE6E6E6 svgShape"></path>
+    <path
+        d="M8.5 9.5C8.5 7.019 10.519 5 13 5c1.232 0 2.35.5 3.163 1.305A4.502 4.502 0 0 0 12 3.5 4.505 4.505 0 0 0 7.5 8c0 1.249.513 2.38 1.337 3.195A4.468 4.468 0 0 1 8.5 9.5z"
+        opacity=".1" fill="#000000" class="color000 svgShape"></path>
+    <circle cx="12" cy="7" r="2.5" fill="#303c42" class="color303C42 svgShape"></circle>
+    <circle cx="12" cy="7" r="1.5" fill="#1e88e5" class="color1E88E5 svgShape"></circle>
+    <path
+        d="M12.988 5.88c.003.04.012.079.012.12 0 .827-.673 1.5-1.5 1.5-.38 0-.723-.147-.988-.38.062.77.702 1.38 1.488 1.38.827 0 1.5-.673 1.5-1.5 0-.447-.2-.845-.512-1.12z"
+        opacity=".1" fill="#000000" class="color000 svgShape"></path>
+    <linearGradient id="a" x1="3.366" x2="17.868" y1="7.587" y2="14.349"
+        gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="#ffffff" stop-opacity=".2" class="stopColorFFF svgShape"></stop>
+        <stop offset="1" stop-color="#ffffff" stop-opacity="0" class="stopColorFFF svgShape"></stop>
+    </linearGradient>
+    <path fill="url(#a)"
+        d="M12 0C7.589 0 4 3.589 4 8c0 1.324.331 2.637.96 3.802l6.602 11.94a.5.5 0 0 0 .875 0l6.605-11.944A8.014 8.014 0 0 0 20 8c0-4.411-3.589-8-8-8z"></path>
+</svg>

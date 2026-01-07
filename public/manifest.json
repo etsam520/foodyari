@@ -1,0 +1,17 @@
+
+
+  {
+    "background_color": "#ff8a00",
+    "description": "Foodyari » Delivery Boy Panel.",
+    "display": "fullscreen",
+    "icons": [
+      {
+        "src": "/public/assets/images/icons/icon-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ],
+    "name": "Foodyari",
+    "short_name": "Foodyari",
+    "start_url": "/deliveryman"
+  }

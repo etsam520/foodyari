@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOODYARI Order Tracking</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for aesthetic enhancements */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f4f9;
+        }
+        /* Animation for status pulse */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.33); }
+            80%, 100% { opacity: 0; }
+        }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .status-pulse {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .status-pulse-ring {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #059669; /* Green color */
+            animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #059669; /* Green color */
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+        /* Custom styles for smooth transitions on collapsible content */
+        .collapsible-content {
+            transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
+        }
+        /* Live Indicator Animation */
+        .live-indicator {
+            animation: pulse-dot 1.5s infinite;
+        }
+        /* Modal Backdrop */
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 50;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Fixed Header -->
+    <header class="sticky top-0 bg-white p-4 shadow-md z-10">
+        <div class="flex justify-between items-center max-w-lg mx-auto">
+            <button onclick="simulateAction('Going Back')" class="text-gray-600 hover:text-[#FF6600]">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <h1 class="text-xl font-extrabold text-[#FF6600]">FOODYARI</h1>
+            <div class="text-xs font-semibold text-gray-500">
+                Order <span id="order-id">#5102289</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="p-4 pt-0 pb-20 max-w-lg mx-auto">
+        
+        <!-- Real-time Status & ETA Card -->
+        <div id="eta-card" class="bg-[#FF6600] text-white p-4 rounded-xl shadow-lg mt-4 mb-4 text-center">
+            <h2 id="main-status-text" class="text-xl font-extrabold mb-2 min-h-[56px] flex items-center justify-center">Pet pooja ka safar shuru ho gaya hai!</h2>
+            <div class="flex items-center justify-center border-t border-white/30 pt-3">
+                <span class="text-sm font-semibold flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span id="eta-text-label">Estimated Arrival:</span>
+                    <span id="live-update-indicator" class="ml-2 w-2 h-2 rounded-full bg-white live-indicator hidden"></span>
+                </span>
+                <span class="text-3xl font-extrabold ml-3 tabular-nums tracking-wider" id="delivery-timer">25:00</span>
+            </div>
+            <p class="text-xs mt-2 opacity-80" id="restaurant-name">From Zaika Family Restaurant</p>
+        </div>
+
+        <!-- Handover OTP Card -->
+        <div id="otp-card" onclick="openOtpModal()" class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-xl shadow-md mb-6 cursor-pointer hover:bg-yellow-200 transition-colors hidden">
+            <div class="flex items-center justify-between">
+                <span class="font-bold text-lg flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9V7a2 2 0 00-2-2H8a2 2 0 00-2 2v2"></path></svg>
+                    Handover OTP
+                </span>
+                <div class="flex items-center space-x-3">
+                     <span class="text-xl font-extrabold text-yellow-700 tracking-wider">
+                        OTP
+                    </span>
+                    <button onclick="event.stopPropagation(); openOtpModal();" class="text-sm text-yellow-700 font-semibold underline hover:no-underline">
+                        View QR
+                    </button>
+                </div>
+            </div>
+            <p class="text-sm mt-1 opacity-90">
+                Aapka khaana aapke darwaze par hai. Jaldi milte hain!
+            </p>
+        </div>
+        
+        <!-- Delivery Instructions Card -->
+        <div id="notes-card" class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-xl shadow-md mb-6">
+            <h2 class="text-lg font-bold text-blue-800 mb-2 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3Z"/><path d="M15 3v6h6"/></svg>
+                Delivery Instructions
+            </h2>
+            <p id="delivery-notes-content" class="text-base text-blue-900 font-medium"></p>
+        </div>
+
+        <!-- Delivery Agent Card -->
+        <div id="agent-container" class="bg-white p-4 rounded-xl shadow-md mb-6">
+            <h2 class="text-lg font-bold text-gray-700 mb-4">Delivery Agent</h2>
+            <div id="agent-card-details" class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <img id="agent-photo" src="" alt="Agent Photo" class="w-12 h-12 rounded-full object-cover mr-3 bg-gray-200">
+                    <div>
+                        <p class="font-bold text-gray-800" id="agent-name">Deepak Kumar</p>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <svg class="w-3 h-3 text-yellow-500 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.638-.921 1.94 0l1.24 3.824a1 1 0 00.95.691h4.028c.969 0 1.371 1.24.588 1.81l-3.264 2.373a1 1 0 00-.364 1.118l1.24 3.824c.3.921-.755 1.688-1.54 1.118l-3.264-2.373a1 1 0 00-1.176 0l-3.264 2.373c-.784.57-1.84-.197-1.54-1.118l1.24-3.824a1 1 0 00-.364-1.118L2.052 9.252c-.783-.57-.381-1.81.588-1.81h4.028a1 1 0 00.95-.691l1.24-3.824z"/></svg>
+                            <span id="agent-rating">4.8</span>
+                            <span class="text-xs text-gray-400 ml-3 mr-1">|</span>
+                            <span class="text-xs text-gray-600 font-medium flex items-center">
+                                <svg class="w-4 h-4 text-gray-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2zM12 3v3"></path></svg>
+                                Bike (<span id="agent-vehicle"></span>)
+                            </span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">
+                            <span class="font-semibold text-gray-700" id="agent-deliveries"></span> Deliveries Completed
+                        </p>
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="simulateAction('Calling Agent')" class="bg-white text-[#FF6600] border border-[#FF6600] p-2 rounded-full hover:bg-gray-50 transition-colors shadow-sm" aria-label="Call Agent">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.5l1 4 3-3 4-1.5 1 4 3 3 1 4 4 1.5V19a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path></svg>
+                    </button>
+                    <button onclick="simulateAction('Messaging Agent (Chat)')" class="bg-[#FF6600] text-white p-2 rounded-full hover:bg-[#ff8833] transition-colors shadow-sm" aria-label="Message Agent">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-4 4v-4z"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Progress Timeline -->
+        <div class="bg-white p-4 rounded-xl shadow-md mb-6">
+            <h2 class="text-lg font-bold text-gray-700 mb-4">Order Progress</h2>
+            <div id="status-timeline" class="relative">
+                <!-- Timeline will be generated here by JS -->
+            </div>
+        </div>
+        
+        <!-- Tipping Card -->
+        <div id="tip-card" class="bg-indigo-50 p-4 rounded-xl shadow-md mb-6 hidden">
+            <h2 class="text-lg font-bold text-gray-700 mb-3 flex items-center">
+                <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                Tip Deepak
+            </h2>
+            <div id="tip-options" class="flex justify-between space-x-2">
+                <button onclick="selectTip(20)" class="flex-1 border border-indigo-300 text-indigo-700 py-2 rounded-lg font-semibold hover:bg-indigo-100 transition-colors">
+                    ₹20
+                </button>
+                <button onclick="selectTip(30)" class="flex-1 border border-indigo-300 text-indigo-700 py-2 rounded-lg font-semibold hover:bg-indigo-100 transition-colors">
+                    ₹30
+                </button>
+                <button onclick="selectTip(50)" class="flex-1 border border-indigo-300 text-indigo-700 py-2 rounded-lg font-semibold hover:bg-indigo-100 transition-colors">
+                    ₹50
+                </button>
+                <button onclick="selectTip('custom')" class="flex-1 bg-indigo-600 text-white py-2 rounded-lg font-semibold hover:bg-indigo-700 transition-colors">
+                    Custom
+                </button>
+            </div>
+        </div>
+
+        <!-- Delivery Agent Rating Prompt -->
+        <div id="rating-prompt" class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-xl shadow-md mb-6 hidden">
+            <div class="font-bold text-lg mb-2">Order Delivered!</div>
+            <p class="text-sm mb-3">Please rate your delivery experience with Deepak.</p>
+            <div class="flex justify-between items-center">
+                <div id="stars" class="flex space-x-1"></div>
+                <button onclick="submitRating()" class="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors text-sm">
+                    Submit Rating
+                </button>
+            </div>
+        </div>
+
+        <!-- Restaurant Rating Prompt -->
+        <div id="restaurant-rating-prompt" class="bg-purple-100 border-l-4 border-purple-500 text-purple-700 p-4 rounded-xl shadow-md mb-6 hidden">
+            <p class="text-sm mb-3 font-semibold">How was the food from Zaika Family Restaurant?</p>
+            <div class="flex justify-between items-center">
+                <div id="restaurant-stars" class="flex space-x-1"></div>
+                <button onclick="submitRestaurantRating()" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-purple-700 transition-colors text-sm">
+                    Rate Food
+                </button>
+            </div>
+        </div>
+
+        <!-- Collapsible Order Details -->
+        <div class="bg-white p-4 rounded-xl shadow-md mb-6">
+            <button onclick="toggleDetails()" class="flex justify-between items-center w-full focus:outline-none">
+                <h2 class="text-lg font-bold text-gray-700">Order Items (<span id="total-items"></span>)</h2>
+                <svg id="details-arrow" class="w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+            <div id="order-details-content" class="collapsible-content mt-4 overflow-hidden" style="max-height: 0;">
+                <div id="item-list"></div>
+                <div class="border-t border-gray-200 mt-4 pt-4">
+                    <p class="text-sm text-gray-600">Total Item Cost: <span class="font-semibold text-gray-800" id="items-total-cost"></span></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- MOVED: Drop-off Address Card -->
+        <div id="address-card" class="bg-white p-4 rounded-xl shadow-md mb-6">
+            <div class="flex justify-between items-center mb-2">
+                <h2 class="text-lg font-bold text-gray-700 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    Your Delivery Address
+                </h2>
+                <button onclick="simulateAction('Attempting to change address')" class="text-sm text-blue-500 font-semibold hover:text-blue-700 transition-colors">
+                    Change?
+                </button>
+            </div>
+            <p id="drop-off-address-content" class="text-sm text-gray-600 font-medium"></p>
+        </div>
+        
+        <!-- Collapsible Restaurant Details -->
+        <div class="bg-white p-4 rounded-xl shadow-md mb-6">
+            <button onclick="toggleRestaurantDetails()" class="flex justify-between items-center w-full focus:outline-none">
+                <h2 class="text-lg font-bold text-gray-700">Restaurant Details</h2>
+                <svg id="restaurant-details-arrow" class="w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+            <div id="restaurant-details-content" class="collapsible-content mt-4 overflow-hidden" style="max-height: 0;">
+                <div id="restaurant-info"></div>
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <button onclick="simulateAction('Calling Restaurant')" class="w-full bg-blue-500 text-white py-2 rounded-lg font-semibold hover:bg-blue-600 transition-colors flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.5l1 4 3-3 4-1.5 1 4 3 3 1 4 4 1.5V19a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path></svg>
+                        Call Restaurant
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Summary -->
+        <div class="bg-white p-4 rounded-xl shadow-md mb-6">
+            <h2 class="text-lg font-bold text-gray-700 mb-4">Payment Summary</h2>
+            <div id="payment-summary-details" class="space-y-2 text-sm"></div>
+            <div class="border-t border-dashed border-gray-300 my-3 pt-3">
+                <div class="flex justify-between font-bold text-lg text-gray-900">
+                    <span>Total Paid</span>
+                    <span id="payment-total"></span>
+                </div>
+            </div>
+            <p class="text-xs text-gray-500 mt-2 text-right mb-4">Payment Method: <span class="font-medium" id="payment-method"></span></p>
+
+            <!-- NEW: Download Invoice Button -->
+            <button onclick="simulateAction('Downloading Invoice')" class="w-full bg-green-100 text-green-800 py-2.5 rounded-lg font-semibold hover:bg-green-200 transition-colors flex items-center justify-center text-sm border border-green-200 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                Download Your Invoice
+            </button>
+
+            <div class="pt-4 border-t border-gray-200">
+                <button onclick="simulateAction('Opening Support Chat')" class="w-full bg-gray-100 text-gray-700 py-2 rounded-lg font-semibold hover:bg-gray-200 transition-colors flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m-7.072 0l-3.536-3.536m7.072 0V3m0 2.636V9.45M3 12h2m14 0h2M7.828 20.172l3.536-3.536M18.364 18.364l-3.536-3.536m0 0a9 9 0 10-12.728-12.728 9 9 0 0012.728 12.728z"></path></svg>
+                    Need Help?
+                </button>
+            </div>
+        </div>
+
+        <!-- Action Message Box -->
+        <div id="action-message" class="fixed bottom-0 left-0 right-0 bg-green-500 text-white text-center p-3 transition-transform duration-300 transform translate-y-full rounded-t-xl shadow-2xl z-50"></div>
+    </main>
+
+    <!-- Fixed Footer -->
+    <footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3 shadow-2xl z-20">
+        <div class="flex justify-between items-center max-w-lg mx-auto space-x-3">
+            <button onclick="simulateAction('Reordering items')" class="flex-1 bg-gray-200 text-gray-800 py-3 rounded-xl font-bold hover:bg-gray-300 transition-colors shadow-md">
+                Reorder
+            </button>
+            <button onclick="simulateAction('Opening Support Chat')" class="flex-1 bg-[#FF6600] text-white py-3 rounded-xl font-bold hover:bg-[#ff8833] transition-colors shadow-lg">
+                <svg class="w-5 h-5 inline mr-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-4 4v-4z"></path></svg>
+                Support
+            </button>
+        </div>
+    </footer>
+
+    <!-- OTP/QR Code Modal -->
+    <div id="otp-modal" class="fixed inset-0 hidden items-center justify-center modal-backdrop transition-opacity duration-300 opacity-0">
+        <div class="bg-white p-6 rounded-xl shadow-2xl w-11/12 max-w-sm transform transition-transform duration-300 scale-90">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-extrabold text-gray-800">Delivery Code</h2>
+                <button onclick="closeOtpModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <p class="text-sm text-center text-gray-600 mb-4">Delivery agent ko yeh code ya QR dikhayein.</p>
+            <div class="flex justify-center items-center p-6 bg-gray-100 rounded-lg mb-6">
+                <img id="modal-qr" src="https://placehold.co/200x200/4c4083/f1f1f1?text=Delivery+QR" alt="QR Code" class="w-48 h-48 rounded-lg border-4 border-white shadow-lg"/>
+            </div>
+            <div class="text-center">
+                <p class="text-xl font-semibold text-gray-700 mb-1">OTP Number</p>
+                <span id="modal-otp" class="text-5xl font-black text-[#FF6600] tracking-widest">1234</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let statusInterval;
+        let timerInterval;
+
+        // --- Order State and Data ---
+        let orderState = {
+            id: "5102289",
+            restaurant: "Zaika Family Restaurant",
+            restaurantAddress: "G-14, Food Street, Karol Bagh, New Delhi",
+            restaurantPhone: "07070961244",
+            dropOffAddress: "2nd Floor, A-45, Patel Nagar, Near Metro Gate #2, New Delhi",
+            etaMinutes: 25,
+            statusIndex: 0,
+            statusLabels: [
+                { title: "Order Accepted", foodieLine: "Pet pooja ka safar shuru ho gaya hai!" },
+                { title: "Preparing Food", foodieLine: "Rasoi mein mehnat jaari! Khushbu aane lagi hai..." },
+                { title: "Ready for Pickup", foodieLine: "Taaza aur Garam! Aapka order pickup ke liye ready hai." },
+                // UPDATED: foodieLine with <br> for line break
+                { title: "Out for Delivery", foodieLine: "Khushiyon ki delivery<br>ab bas raste mein hai!" },
+                { title: "Arriving Nearby", foodieLine: "Garma-garam khaana bas kuch hi pal door!" },
+                { title: "Delivered", foodieLine: "Safar Poora Hua! Ab bas khaane ka maza lijiye. 🍽️" }
+            ],
+            statusTimestamps: [ new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }), null, null, null, null, null ],
+            deliveryAgent: {
+                name: "Deepak Kumar",
+                rating: 4.8,
+                vehicle: "DL 05 AB 1234",
+                deliveries: 1500,
+                photoUrl: "https://placehold.co/48x48/FF6600/ffffff?text=DK",
+            },
+            items: [
+                { name: "Chicken Chili", quantity: 1, price: 275.00, notes: "Spicy" },
+                { name: "Veg Manchurian", quantity: 2, price: 150.00, notes: "No onion, less salt" },
+            ],
+            payment: { subTotal: 575.00, discount: -50.00, platformFee: 0.00, sgst: 28.75, cgst: 28.75, deliveryCharge: 18.37, total: 600.87, method: "UPI" },
+            isDetailsCollapsed: true,
+            isRestaurantDetailsCollapsed: true,
+            isRated: false,
+            isRestaurantRated: false,
+            deliveryOTP: "1234",
+            deliveryNotes: "Doorbell is broken, please call on arrival.",
+            selectedTip: 0,
+        };
+
+        const totalItemsCount = orderState.items.reduce((sum, item) => sum + item.quantity, 0);
+
+        // --- Utility Functions ---
+        const formatCurrency = (amount) => `₹${amount.toFixed(2)}`;
+
+        const simulateAction = (action) => {
+            const messageBox = document.getElementById('action-message');
+            messageBox.textContent = `${action}! (Simulated)`;
+            messageBox.classList.remove('translate-y-full');
+            setTimeout(() => messageBox.classList.add('translate-y-full'), 3000);
+        };
+
+        const submitRating = () => {
+            orderState.isRated = true;
+            simulateAction('Delivery rating submitted');
+            renderApp();
+        };
+
+        const submitRestaurantRating = () => {
+            orderState.isRestaurantRated = true;
+            simulateAction('Restaurant rating submitted');
+            renderApp();
+        };
+
+        // --- OTP Modal Functions ---
+        const openOtpModal = () => {
+            if (orderState.statusIndex !== 4) return;
+            const modal = document.getElementById('otp-modal');
+            document.getElementById('modal-otp').textContent = orderState.deliveryOTP;
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.add('opacity-100');
+                modal.querySelector('div').classList.remove('scale-90');
+            }, 10);
+        };
+
+        const closeOtpModal = () => {
+            const modal = document.getElementById('otp-modal');
+            modal.classList.remove('opacity-100');
+            modal.querySelector('div').classList.add('scale-90');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        };
+        
+        // --- Countdown Timer ---
+        function startEtaTimer(durationMinutes) {
+            if (timerInterval) clearInterval(timerInterval);
+            const timerEl = document.getElementById('delivery-timer');
+            let timer = durationMinutes * 60;
+            if (timer <= 0) {
+                timerEl.textContent = "Now!";
+                return;
+            }
+
+            timerInterval = setInterval(() => {
+                const minutes = Math.floor(timer / 60);
+                let seconds = timer % 60;
+                seconds = seconds < 10 ? '0' + seconds : seconds;
+                
+                timerEl.textContent = `${minutes}:${seconds}`;
+
+                if (--timer < 0) {
+                    clearInterval(timerInterval);
+                    timerEl.textContent = "Now!";
+                }
+            }, 1000);
+        }
+
+        // --- Rendering Functions ---
+        const renderApp = () => {
+            const { statusIndex } = orderState;
+            const currentStatus = orderState.statusLabels[statusIndex];
+            
+            // ETA Card
+            const etaCard = document.getElementById('eta-card');
+            const mainStatusText = document.getElementById('main-status-text');
+            const timerDisplay = document.getElementById('delivery-timer');
+            const etaTextLabel = document.getElementById('eta-text-label');
+            const liveIndicator = document.getElementById('live-update-indicator');
+            
+            mainStatusText.innerHTML = currentStatus.foodieLine; // Use innerHTML for <br>
+            etaTextLabel.textContent = `Estimated Arrival:`;
+            etaCard.classList.remove('bg-green-600');
+            etaCard.classList.add('bg-[#FF6600]');
+            liveIndicator.classList.toggle('hidden', statusIndex < 2 || statusIndex > 4);
+
+            if (statusIndex >= 3 && statusIndex <= 4) {
+                etaTextLabel.textContent = `Arriving in:`;
+            } else if (statusIndex === 5) {
+                etaCard.classList.remove('bg-[#FF6600]');
+                etaCard.classList.add('bg-green-600');
+                etaTextLabel.textContent = `Delivered by ${orderState.deliveryAgent.name}`;
+                if (timerInterval) clearInterval(timerInterval);
+                timerDisplay.textContent = 'Enjoy!';
+            }
+            
+            // Show/Hide Cards
+            document.getElementById('otp-card').classList.toggle('hidden', statusIndex !== 4);
+            document.getElementById('tip-card').classList.toggle('hidden', statusIndex < 3 || statusIndex > 4);
+            document.getElementById('rating-prompt').classList.toggle('hidden', statusIndex !== 5 || orderState.isRated);
+            document.getElementById('restaurant-rating-prompt').classList.toggle('hidden', statusIndex !== 5 || orderState.isRestaurantRated);
+
+            // Render components
+            document.getElementById('restaurant-name').textContent = `From ${orderState.restaurant}`;
+            document.getElementById('delivery-notes-content').textContent = orderState.deliveryNotes || "No special instructions provided.";
+            document.getElementById('drop-off-address-content').textContent = orderState.dropOffAddress;
+            Object.assign(document.getElementById('agent-photo'), {src: orderState.deliveryAgent.photoUrl});
+            document.getElementById('agent-name').textContent = orderState.deliveryAgent.name;
+            document.getElementById('agent-rating').textContent = orderState.deliveryAgent.rating.toFixed(1);
+            document.getElementById('agent-vehicle').textContent = orderState.deliveryAgent.vehicle;
+            document.getElementById('agent-deliveries').textContent = orderState.deliveryAgent.deliveries.toLocaleString();
+            
+            renderTimeline();
+            renderOrderDetails();
+            renderRestaurantDetails();
+            renderPaymentSummary();
+            if(statusIndex === 5) {
+                if(!orderState.isRated) renderRatingStars('stars');
+                if(!orderState.isRestaurantRated) renderRatingStars('restaurant-stars');
+            }
+
+            document.getElementById('total-items').textContent = totalItemsCount;
+            document.getElementById('items-total-cost').textContent = formatCurrency(orderState.payment.subTotal);
+        };
+        
+        const renderTimeline = () => {
+            const timeline = document.getElementById('status-timeline');
+            timeline.innerHTML = ''; 
+            orderState.statusLabels.forEach((status, index) => {
+                const isActive = index === orderState.statusIndex;
+                const isCompleted = index < orderState.statusIndex;
+                const isFinal = index === orderState.statusLabels.length - 1;
+                let iconHtml = '', titleClass = 'text-gray-500', foodieLineClass = 'text-gray-400', dotClass = 'bg-gray-400';
+                let contentTime = orderState.statusTimestamps[index] || (isActive ? 'Processing...' : 'Pending');
+
+                if (isCompleted) {
+                    iconHtml = '<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+                    [titleClass, foodieLineClass, dotClass] = ['text-green-600', 'text-green-700', 'bg-green-600'];
+                } else if (isActive) {
+                    iconHtml = '<div class="status-pulse flex justify-center items-center"><div class="status-pulse-ring absolute bg-[#FF6600] opacity-75"></div><div class="status-dot bg-[#FF6600]"></div></div>';
+                    [titleClass, foodieLineClass, dotClass] = ['text-gray-900', 'text-gray-700', 'bg-[#FF6600]'];
+                    if (index === 3 || index === 4) {
+                         iconHtml = `<img src="${orderState.deliveryAgent.photoUrl}" alt="Agent" class="w-5 h-5 rounded-full object-cover border-2 border-[#FF6600] shadow-md">`;
+                    }
+                }
+                timeline.innerHTML += `<div class="flex relative pb-8">${!isFinal ? `<div class="absolute top-0 left-2 w-0.5 ${isCompleted ? 'bg-green-600' : 'bg-gray-300'} h-full"></div>` : ''}<div class="z-10 w-5 h-5 flex items-center justify-center rounded-full flex-shrink-0 ${isCompleted ? dotClass : (isActive ? 'bg-white' : dotClass)} transition-colors duration-500">${iconHtml}</div><div class="flex-grow pl-4"><h3 class="text-base font-extrabold ${titleClass}">${status.title}</h3><p class="text-sm font-semibold ${foodieLineClass}">${status.foodieLine}</p><p class="mt-1 text-xs text-gray-500">${contentTime}</p></div></div>`;
+            });
+        };
+
+        const renderCollapsible = (contentId, arrowId, isCollapsed) => {
+            const content = document.getElementById(contentId);
+            const arrow = document.getElementById(arrowId);
+            if (isCollapsed) {
+                content.style.maxHeight = '0';
+                arrow.classList.remove('rotate-180');
+            } else {
+                content.style.maxHeight = content.scrollHeight + 'px';
+                arrow.classList.add('rotate-180');
+            }
+        };
+
+        const toggleDetails = () => renderCollapsible('order-details-content', 'details-arrow', orderState.isDetailsCollapsed = !orderState.isDetailsCollapsed);
+        const toggleRestaurantDetails = () => renderCollapsible('restaurant-details-content', 'restaurant-details-arrow', orderState.isRestaurantDetailsCollapsed = !orderState.isRestaurantDetailsCollapsed);
+
+        const renderOrderDetails = () => document.getElementById('item-list').innerHTML = orderState.items.map(item => `<div class="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0"><div class="flex items-center flex-1 pr-2 min-w-0"><span class="text-sm text-gray-700 font-semibold mr-2 flex-shrink-0">${item.quantity}x</span><span class="base font-medium text-gray-800 whitespace-nowrap overflow-hidden text-ellipsis">${item.name}</span>${item.notes ? `<span class="text-xs text-[#FF6600] italic ml-1 whitespace-nowrap overflow-hidden text-ellipsis">(${item.notes})</span>` : ''}</div><span class="text-base font-semibold text-gray-800 flex-shrink-0">${formatCurrency(item.price * item.quantity)}</span></div>`).join('');
+        const renderRestaurantDetails = () => document.getElementById('restaurant-info').innerHTML = `<p class="font-bold text-gray-800">${orderState.restaurant}</p><p class="text-sm text-gray-600">${orderState.restaurantAddress}</p><p class="text-sm text-[#FF6600]">Phone: ${orderState.restaurantPhone}</p>`;
+        const renderPaymentSummary = () => {
+            const { subTotal, discount, platformFee, deliveryCharge, sgst, cgst, total, method } = orderState.payment;
+            document.getElementById('payment-summary-details').innerHTML = `<div class="flex justify-between"><span>Sub Total (${totalItemsCount} Items)</span><span class="font-medium">${formatCurrency(subTotal)}</span></div>${discount < 0 ? `<div class="flex justify-between text-red-600"><span>Discount (PROMO)</span><span class="font-medium">${formatCurrency(discount)}</span></div>` : ''}<div class="flex justify-between"><span>Platform Fee</span><span class="font-medium text-green-600">${formatCurrency(platformFee)}</span></div><div class="flex justify-between"><span>Delivery Charge</span><span class="font-medium">${formatCurrency(deliveryCharge)}</span></div><div class="flex justify-between text-xs text-gray-500 pt-1 border-t border-gray-100"><span>SGST</span><span class="font-normal">${formatCurrency(sgst)}</span></div><div class="flex justify-between text-xs text-gray-500"><span>CGST</span><span class="font-normal">${formatCurrency(cgst)}</span></div>`;
+            document.getElementById('payment-total').textContent = formatCurrency(total);
+            document.getElementById('payment-method').textContent = method;
+        };
+
+        const renderRatingStars = (containerId) => {
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                starsHtml += `<svg onclick="simulateAction('Selected ${i} star rating')" class="w-6 h-6 text-gray-400 hover:text-yellow-400 cursor-pointer transition-colors" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.638-.921 1.94 0l1.24 3.824a1 1 0 00.95.691h4.028c.969 0 1.371 1.24.588 1.81l-3.264 2.373a1 1 0 00-.364 1.118l1.24 3.824c.3.921-.755 1.688-1.54 1.118l-3.264-2.373a1 1 0 00-1.176 0l-3.264 2.373c-.784.57-1.84-.197-1.54-1.118l1.24-3.824a1 1 0 00-.364-1.118L2.052 9.252c-.783-.57-.381-1.81.588-1.81h4.028a1 1 0 00.95-.691l1.24-3.824z"/></svg>`;
+            }
+            document.getElementById(containerId).innerHTML = starsHtml;
+        };
+
+        // --- Simulation Logic ---
+        const advanceStatus = () => {
+            if (orderState.statusIndex < orderState.statusLabels.length - 1) {
+                orderState.statusIndex++;
+                orderState.statusTimestamps[orderState.statusIndex] = new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+                // Simulate ETA decrease
+                const timeToDecrease = orderState.etaMinutes > 5 ? Math.floor(Math.random() * 5) + 6 : orderState.etaMinutes;
+                orderState.etaMinutes = Math.max(0, orderState.etaMinutes - timeToDecrease);
+                
+                renderApp();
+                startEtaTimer(orderState.etaMinutes);
+            } else {
+                clearInterval(statusInterval);
+                if (timerInterval) clearInterval(timerInterval);
+            }
+        };
+
+        const initializeApp = () => {
+            renderApp();
+            startEtaTimer(orderState.etaMinutes);
+            if (statusInterval) clearInterval(statusInterval);
+            statusInterval = setInterval(advanceStatus, 7000); // Advance every 7 seconds
+        };
+
+        // --- Initial Execution ---
+        initializeApp();
+    </script>
+
+</body>
+</html>
+
